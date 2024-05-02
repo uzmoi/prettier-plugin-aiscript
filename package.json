@@ -20,6 +20,9 @@
     "url": "https://github.com/uzmoi/prettier-plugin-aiscript/issues"
   },
   "homepage": "https://github.com/uzmoi/prettier-plugin-aiscript#readme",
+  "dependencies": {
+    "@syuilo/aiscript": "^0.18.0"
+  },
   "devDependencies": {
     "cspell": "^8.7.0",
     "lefthook": "^1.6.10",
