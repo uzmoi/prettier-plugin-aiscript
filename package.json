@@ -1,0 +1,31 @@
+{
+  "name": "@rizzzse/prettier-plugin-aiscript",
+  "version": "0.1.0",
+  "description": "Formatter for AiScript.",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts",
+    "check": "tsc",
+    "test": "vitest",
+    "format": "prettier --check .",
+    "spellcheck": "cspell --no-progress ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/uzmoi/prettier-plugin-aiscript.git"
+  },
+  "author": "uzmoi",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/uzmoi/prettier-plugin-aiscript/issues"
+  },
+  "homepage": "https://github.com/uzmoi/prettier-plugin-aiscript#readme",
+  "devDependencies": {
+    "cspell": "^8.7.0",
+    "lefthook": "^1.6.10",
+    "prettier": "^3.2.5",
+    "tsup": "^8.0.2",
+    "typescript": "^5.4.5",
+    "vitest": "^1.5.3"
+  }
+}
