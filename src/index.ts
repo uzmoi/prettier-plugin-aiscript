@@ -23,6 +23,13 @@ const printer: prettier.Printer<Node> = {
 };
 
 const plugin: prettier.Plugin<Node> = {
+    languages: [
+        {
+            name: "AiScript",
+            parsers: ["aiscript"],
+            extensions: ["is"],
+        },
+    ],
     parsers: { aiscript: parser },
     printers: { aiscript: printer },
 };
