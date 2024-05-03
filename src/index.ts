@@ -1,6 +1,6 @@
 import prettier from "prettier";
 import { Parser } from "@syuilo/aiscript";
-import { Node } from "./printer";
+import { Node, printAiScript } from "./printer";
 
 const parser: prettier.Parser<Node> = {
     parse(text, _options) {
@@ -17,8 +17,8 @@ const parser: prettier.Parser<Node> = {
 };
 
 const printer: prettier.Printer<Node> = {
-    print(path, options, print, args) {
-        return "";
+    print(path, options, print, _args) {
+        return printAiScript(path, options, print);
     },
 };
 

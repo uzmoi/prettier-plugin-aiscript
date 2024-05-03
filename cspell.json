@@ -4,10 +4,15 @@
     "ignorePaths": ["package-lock.json", ".git"],
     "words": [
         "aiscript",
+        "gteq",
+        "hardline",
         "lefthook",
+        "lteq",
         "Parens",
         "rizzzse",
+        "softline",
         "syuilo",
+        "tmpl",
         "tsbuildinfo",
         "tsup",
         "uzmoi"
