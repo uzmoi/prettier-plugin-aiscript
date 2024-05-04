@@ -48,7 +48,7 @@ export const parseComments = (source: string): [Ast.Loc, string][] => {
 
 export const correctLocation = <T extends { loc?: Ast.Loc }>(
     node: T,
-    comments: [Ast.Loc, string][],
+    comments: Iterable<readonly [Ast.Loc, string]>,
 ): T => {
     if (!node.loc) return node;
 
@@ -58,12 +58,13 @@ export const correctLocation = <T extends { loc?: Ast.Loc }>(
     end++;
 
     for (const [loc, { length }] of comments) {
-        // nodeのendよりも前にコメントがあればendをずらす。
-        if (loc.start > end) break;
+        // コメントの位置がnodeのendよりも前ならendをずらす。
+        if (loc.start >= end) break;
         end += length;
 
-        // nodeのstartよりも前にコメントがあればstartをずらす。
-        if (loc.start > start) break;
+        // コメントの位置がnodeのstartよりも前ならstartをずらす。
+        // そうでないなら、まだコメントがnodeの内側にある可能性があるのでcontinue。
+        if (loc.start > start) continue;
         start += length;
     }
 
