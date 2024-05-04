@@ -1,11 +1,29 @@
 import prettier from "prettier";
 import { Parser } from "@syuilo/aiscript";
 import { Node, printAiScript } from "./printer";
+import { correctLocation, parseComments } from "./parse-comments";
+import { visitNode } from "@syuilo/aiscript/parser/visit.js";
 
 const parser: prettier.Parser<Node> = {
     parse(text, _options) {
-        const body = Parser.parse(text);
-        return { type: "root", body };
+        const comments = parseComments(text);
+
+        const parser = new Parser();
+        parser.addPlugin("transform", nodes =>
+            nodes.map(node =>
+                visitNode(node, node => correctLocation(node, comments)),
+            ),
+        );
+
+        const body = parser.parse(text);
+
+        const commentNodes = comments.map(([loc, contents]) => ({
+            type: "comment" as const,
+            loc,
+            value: contents,
+        }));
+
+        return { type: "root", body, comments: commentNodes };
     },
     astFormat: "aiscript",
     locStart(node) {
@@ -19,6 +37,24 @@ const parser: prettier.Parser<Node> = {
 const printer: prettier.Printer<Node> = {
     print(path, options, print, _args) {
         return printAiScript(path, options, print);
+    },
+    hasPrettierIgnore(path) {
+        const { node } = path;
+
+        if (node.type === "comment" || !node.comments) {
+            return false;
+        }
+
+        return node.comments.some(comment =>
+            /\/[/*]\s*prettier-ignore/.test(comment.value),
+        );
+    },
+    canAttachComment(node) {
+        return node.type !== "comment";
+    },
+    printComment(commentPath, options) {
+        const { node } = commentPath;
+        return node.type === "comment" ? node.value : "";
     },
 };
 

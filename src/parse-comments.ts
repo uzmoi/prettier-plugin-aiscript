@@ -45,3 +45,29 @@ export const parseComments = (source: string): [Ast.Loc, string][] => {
         source.slice(range.start, range.end),
     ]);
 };
+
+export const correctLocation = <T extends { loc?: Ast.Loc }>(
+    node: T,
+    comments: [Ast.Loc, string][],
+): T => {
+    if (!node.loc) return node;
+
+    let { start, end } = node.loc;
+
+    // AiScriptのパーサーがendに最後の文字のindexを入れるので+1する。
+    end++;
+
+    for (const [loc, { length }] of comments) {
+        // nodeのendよりも前にコメントがあればendをずらす。
+        if (loc.start > end) break;
+        end += length;
+
+        // nodeのstartよりも前にコメントがあればstartをずらす。
+        if (loc.start > start) break;
+        start += length;
+    }
+
+    const loc = { start, end };
+
+    return { ...node, loc };
+};
