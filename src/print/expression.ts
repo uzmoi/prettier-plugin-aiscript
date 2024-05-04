@@ -117,10 +117,8 @@ export const printExpression = (
                 "]",
             ];
         case "prop":
-            return [
-                path.call(print, "target"),
-                indent([softline, ".", node.name]),
-            ];
+            // 改行やスペースは不許可
+            return [path.call(print, "target"), ".", node.name];
     }
 };
 
@@ -301,13 +299,15 @@ const printCall = (
         }
     }
 
+    // 通常の関数呼び出し
+    // 末尾カンマは不許可
+
     return group([
         path.call(print, "target"),
         "(",
         indent([
             softline,
             join([",", line], (path as AstPath<Ast.Call>).map(print, "args")),
-            ifBreak(","),
         ]),
         softline,
         ")",
