@@ -2,8 +2,7 @@ import { Ast } from "@syuilo/aiscript";
 import { AstPath, Doc, ParserOptions, doc } from "prettier";
 import { printStatement } from "./print/statement";
 import { printExpression } from "./print/expression";
-
-export type Node = Ast.Node | { type: "root"; body: Ast.Node[]; loc?: Ast.Loc };
+import { Node } from "./node";
 
 const { group, hardline, indent, join } = doc.builders;
 

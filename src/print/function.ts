@@ -1,6 +1,6 @@
 import { Ast } from "@syuilo/aiscript";
 import { AstPath, Doc, ParserOptions, doc } from "prettier";
-import { Node } from "../printer";
+import { Node } from "../node";
 
 const { group, line, softline, hardline, indent, join } = doc.builders;
 

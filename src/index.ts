@@ -1,8 +1,9 @@
 import prettier from "prettier";
 import { Parser } from "@syuilo/aiscript";
-import { Node, printAiScript } from "./printer";
+import { printAiScript } from "./printer";
 import { correctLocation, parseComments } from "./parse-comments";
 import { visitNode } from "@syuilo/aiscript/parser/visit.js";
+import { Comment, Node } from "./node";
 
 const parser: prettier.Parser<Node> = {
     parse(text, _options) {
@@ -41,7 +42,7 @@ const printer: prettier.Printer<Node> = {
     hasPrettierIgnore(path) {
         const { node } = path;
 
-        if (node.type === "comment" || !node.comments) {
+        if (!node.comments) {
             return false;
         }
 
@@ -50,10 +51,10 @@ const printer: prettier.Printer<Node> = {
         );
     },
     canAttachComment(node) {
-        return node.type !== "comment";
+        return (node as { type: string }).type !== "comment";
     },
-    printComment(commentPath, options) {
-        const { node } = commentPath;
+    printComment(commentPath, _options) {
+        const node = commentPath.node as unknown as Comment;
         return node.type === "comment" ? node.value : "";
     },
 };
