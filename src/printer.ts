@@ -49,13 +49,19 @@ export const printAiScript = (
                     print,
                 );
             }
-            if (Ast.isExpression(node)) {
+            if (
+                node.type === "and" ||
+                node.type === "or" ||
+                Ast.isExpression(node)
+            ) {
                 return printExpression(
                     path as AstPath<Node> & { node: Ast.Expression },
                     options,
                     print,
                 );
             }
-            return node;
+            throw new TypeError(
+                `Unknown node type: '${(node as { type: string }).type}'.`,
+            );
     }
 };
