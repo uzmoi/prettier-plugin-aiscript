@@ -2,9 +2,10 @@
   "name": "@rizzzse/prettier-plugin-aiscript",
   "version": "0.1.0",
   "description": "Formatter for AiScript.",
-  "main": "dist/index.js",
+  "type": "module",
+  "module": "dist/index.js",
   "scripts": {
-    "build": "tsup src/index.ts --format esm --dts",
+    "build": "tsup",
     "check": "tsc",
     "test": "vitest",
     "format": "prettier --check .",

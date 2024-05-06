@@ -40,7 +40,7 @@ const printer: prettier.Printer<Node> = {
     },
 };
 
-const plugin: prettier.Plugin<Node> = {
+const plugin: prettier.Plugin = {
     languages: [
         {
             name: "AiScript",
