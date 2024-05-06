@@ -3,7 +3,15 @@ import { AstPath, Doc, ParserOptions, doc } from "prettier";
 import { Node } from "../node";
 import { printFunction } from "./function";
 
-const { group, line, hardline, indent, join } = doc.builders;
+const {
+    group,
+    line,
+    hardline,
+    indent,
+    indentIfBreak,
+    lineSuffixBoundary,
+    join,
+} = doc.builders;
 
 export const printStatement = (
     path: AstPath<Node> & { node: Ast.Statement },
@@ -49,11 +57,11 @@ export const printStatement = (
         case "continue":
             return "continue";
         case "assign":
-            return printAssign(path, "=", print);
+            return printAssign(path, print, path.call(print, "dest"));
         case "addAssign":
-            return printAssign(path, "+=", print);
+            return printAssign(path, print, path.call(print, "dest"), "+=");
         case "subAssign":
-            return printAssign(path, "-=", print);
+            return printAssign(path, print, path.call(print, "dest"), "-=");
     }
 };
 
@@ -76,11 +84,7 @@ const printDefinition = (
         ]);
     }
 
-    return group([
-        `${node.mut ? "var" : "let"} ${node.name} =`,
-        line,
-        path.call(print, "expr"),
-    ]);
+    return printAssign(path, print, `${node.mut ? "var" : "let"} ${node.name}`);
 };
 
 const printFor = (
@@ -136,14 +140,18 @@ const printFor = (
 
 const printAssign = (
     path: AstPath<Node>,
-    op: string,
     print: (path: AstPath<Ast.Node>) => Doc,
+    lhs: Doc,
+    op = "=",
+    rhs: Doc = path.call(print, "expr"),
 ): Doc => {
+    const groupId = Symbol("assign");
+
     return group([
-        path.call(print, "dest"),
-        " ",
-        op,
-        line,
-        indent(path.call(print, "expr")),
+        lhs,
+        " " + op,
+        group(indent(line), { id: groupId }),
+        lineSuffixBoundary,
+        indentIfBreak(rhs, { groupId }),
     ]);
 };
