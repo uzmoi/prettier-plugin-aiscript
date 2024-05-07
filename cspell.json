@@ -15,6 +15,7 @@
         "tmpl",
         "tsbuildinfo",
         "tsup",
+        "Typecheck",
         "uzmoi"
     ]
 }
