@@ -38,18 +38,17 @@
 
 <style>
     .playground {
-        flex: 1 1 auto;
-
+        height: 100%;
         display: flex;
         flex-flow: row wrap;
         gap: 1em;
     }
 
     .panel {
-        flex: 1 1 32em;
+        flex: 1 0 32em;
         overflow-y: auto;
-        min-width: 0;
         min-height: 0;
+        max-height: 100%;
         border: 1px solid #aaa;
     }
 

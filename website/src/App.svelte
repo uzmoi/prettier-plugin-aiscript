@@ -6,7 +6,9 @@
 <main>
     <h1>prettier-plugin-aiscript playground</h1>
     <p>AiScript Version: {AISCRIPT_VERSION}</p>
-    <Playground />
+    <div class="playground">
+        <Playground />
+    </div>
 </main>
 
 <style>
@@ -38,5 +40,10 @@
     h1 {
         font-size: xx-large;
         line-height: 1.2;
+    }
+
+    .playground {
+        flex: 1 1 0;
+        min-height: 0;
     }
 </style>
