@@ -5,6 +5,7 @@
   "type": "module",
   "module": "dist/index.js",
   "scripts": {
+    "dev": "cd website && npm run dev",
     "build": "tsup",
     "check": "tsc",
     "test": "vitest",
