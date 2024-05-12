@@ -55,7 +55,7 @@
         font-family: monospace;
         padding: 0.6em;
         padding-left: 3.5em;
-        overflow-wrap: break-word;
+        line-break: anywhere;
     }
 
     textarea {
@@ -77,7 +77,6 @@
         white-space: pre-wrap;
         word-spacing: inherit;
         caret-color: white;
-        caret-shape: block;
     }
 
     .highlight {
