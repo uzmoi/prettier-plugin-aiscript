@@ -1,5 +1,6 @@
 <script lang="ts">
     import { format } from "prettier";
+    import { AiScriptSyntaxError } from "@syuilo/aiscript/error.js";
     import plugin from "../../src";
     import HighlightTextarea from "./lib/HighlightTextarea.svelte";
 
@@ -21,8 +22,15 @@
         {:then formatted}
             <HighlightTextarea value={formatted} readonly />
         {:catch error}
-            <div>
-                {String(error)}
+            <div class="error">
+                {#if error instanceof AiScriptSyntaxError}
+                    <p>{error.message}</p>
+                {:else if error instanceof Error}
+                    <p>Format error.</p>
+                    <p>{error.message}</p>
+                {:else}
+                    <p>Unknown error.</p>
+                {/if}
             </div>
         {/await}
     </div>
@@ -43,5 +51,11 @@
         min-width: 0;
         min-height: 0;
         border: 1px solid #aaa;
+    }
+
+    .error {
+        padding: 0.6em;
+        font-family: monospace;
+        background-color: #a22;
     }
 </style>
