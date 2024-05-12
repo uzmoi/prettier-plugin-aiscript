@@ -11,13 +11,13 @@ const keywords = new Set([
 ]);
 
 const tokenTypes = [
-    ["template", /(?<=})[^`{]*`?/y, { template: true }],
+    ["template", /(?<=})(\\[`{]|[^`{])*`?/y, { template: true }],
     ["space", /\s+/y],
     ["comment", /\/\/.*|\/\*[^]*?\*\//y],
     ["ns", /\w+(?=:)/y],
     ["num", /\d+/y],
     ["str", /(['"])(\\\1|(?!\1).)*\1/y],
-    ["template", /`[^`{]*`?/y],
+    ["template", /`(\\[`{]|[^`{])*`?/y],
     ["ident", /\w+/y],
     ["delim", /[,()[\]{}]/y],
     ["mark", /[+\-*/%=!&|^~!?:.;.#@\\<>]+/y],
