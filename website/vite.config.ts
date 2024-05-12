@@ -9,4 +9,20 @@ export default defineConfig({
             prettier: "prettier/standalone",
         },
     },
+    build: {
+        rollupOptions: {
+            output: {
+                manualChunks: {
+                    "prettier-standalone": ["prettier"],
+                    aiscript: ["@syuilo/aiscript"],
+                },
+            },
+            treeshake: {
+                preset: "smallest",
+                moduleSideEffects(id) {
+                    return /\/website\/src\/main.ts$/.test(id);
+                },
+            },
+        },
+    },
 });

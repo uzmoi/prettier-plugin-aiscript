@@ -13,6 +13,7 @@
         "softline",
         "syuilo",
         "tmpl",
+        "treeshake",
         "tsbuildinfo",
         "tsup",
         "Typecheck",
