@@ -1,0 +1,23 @@
+*,
+::before,
+::after {
+    box-sizing: border-box;
+    margin: 0;
+}
+
+img,
+svg {
+    vertical-align: middle;
+}
+
+:root {
+    font-family: system-ui;
+    background-color: #242424;
+    color: #eee;
+}
+
+:root,
+body,
+#app {
+    height: 100%;
+}

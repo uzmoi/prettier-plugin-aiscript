@@ -12,29 +12,11 @@
 </main>
 
 <style>
-    :global(*, ::before, ::after) {
-        box-sizing: border-box;
-        margin: 0;
-    }
-
-    :global(img, svg) {
-        vertical-align: middle;
-    }
-
-    :global(:root) {
-        font-family: system-ui;
-        background-color: #242424;
-        color: #eee;
-    }
-
-    :global(:root, body, #app, main) {
-        height: 100%;
-    }
-
     main {
         display: flex;
         flex-flow: column nowrap;
         padding: 1em 2em;
+        height: 100%;
     }
 
     h1 {
