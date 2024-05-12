@@ -1,6 +1,6 @@
 import prettier from "prettier";
 import { printAiScript } from "./printer";
-import { Comment, Node } from "./node";
+import type { Comment, Node } from "./node";
 import { parse } from "./parse";
 
 const parser: prettier.Parser<Node> = {

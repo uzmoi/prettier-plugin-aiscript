@@ -1,7 +1,7 @@
 import { Parser } from "@syuilo/aiscript";
 import { correctLocation, parseComments } from "./parse-comments";
 import { visitNode } from "@syuilo/aiscript/parser/visit.js";
-import { Root } from "./node";
+import type { Root } from "./node";
 
 export const parse = (text: string): Root => {
     const comments = parseComments(text);

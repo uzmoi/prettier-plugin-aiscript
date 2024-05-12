@@ -1,4 +1,4 @@
-import { Ast } from "@syuilo/aiscript";
+import type { Ast } from "@syuilo/aiscript";
 import { parse } from "@syuilo/aiscript/parser/parser.js";
 
 // コメントの構文

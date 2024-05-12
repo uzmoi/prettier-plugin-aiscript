@@ -1,4 +1,4 @@
-import { Ast } from "@syuilo/aiscript";
+import type { Ast } from "@syuilo/aiscript";
 
 export type Comment = {
     type: "comment";
