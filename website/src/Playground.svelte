@@ -4,7 +4,7 @@
     import plugin from "../../src";
     import HighlightTextarea from "./lib/HighlightTextarea.svelte";
 
-    let value = "";
+    export let value = "";
 
     $: formatting = format(value, {
         parser: "aiscript",

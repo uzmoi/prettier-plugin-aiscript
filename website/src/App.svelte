@@ -1,13 +1,14 @@
 <script lang="ts">
     import { AISCRIPT_VERSION } from "@syuilo/aiscript/constants.js";
     import Playground from "./Playground.svelte";
+    import initialCode from "./assets/initial-code.is?raw";
 </script>
 
 <main>
     <h1>prettier-plugin-aiscript playground</h1>
     <p>AiScript Version: {AISCRIPT_VERSION}</p>
     <div class="playground">
-        <Playground />
+        <Playground value={initialCode} />
     </div>
 </main>
 
