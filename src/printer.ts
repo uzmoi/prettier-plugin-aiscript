@@ -51,6 +51,7 @@ export const printAiScript = (
                 );
             }
             if (
+                node.type === "not" ||
                 node.type === "and" ||
                 node.type === "or" ||
                 Ast.isExpression(node)
