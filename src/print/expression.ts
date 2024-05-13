@@ -1,6 +1,6 @@
 import type { Ast } from "@syuilo/aiscript";
 import { type AstPath, type Doc, type ParserOptions, doc } from "prettier";
-import { type Node } from "../node";
+import type { Node } from "../node";
 import { printFunction } from "./function";
 import { printBlock } from "./block";
 
@@ -82,7 +82,7 @@ export const printExpression = (
 
         // operators
         case "exists":
-            return ["exists ", node.identifier.name];
+            return ["exists ", path.call(print, "identifier")];
         case "not":
             return ["!", path.call(print, "expr")];
         case "and":
@@ -263,32 +263,22 @@ const printCall = (
             const rhs = (path as AstPath<Ast.Call>).call(print, "args", 1);
 
             // https://github.com/aiscript-dev/aiscript/blob/master/src/parser/plugins/infix-to-fncall.ts#L87
-            switch (target.name) {
-                case "Core:mul":
-                    return [lhs, " * ", rhs];
-                case "Core:pow":
-                    return [lhs, " ^ ", rhs];
-                case "Core:div":
-                    return [lhs, " / ", rhs];
-                case "Core:mod":
-                    return [lhs, " % ", rhs];
-                case "Core:add":
-                    return [lhs, " + ", rhs];
-                case "Core:sub":
-                    return [lhs, " - ", rhs];
-                case "Core:eq":
-                    return [lhs, " == ", rhs];
-                case "Core:neq":
-                    return [lhs, " != ", rhs];
-                case "Core:lt":
-                    return [lhs, " < ", rhs];
-                case "Core:gt":
-                    return [lhs, " > ", rhs];
-                case "Core:lteq":
-                    return [lhs, " <= ", rhs];
-                case "Core:gteq":
-                    return [lhs, " >= ", rhs];
-            }
+            const op = {
+                "Core:mul": "*",
+                "Core:pow": "^",
+                "Core:div": "/",
+                "Core:mod": "%",
+                "Core:add": "+",
+                "Core:sub": "-",
+                "Core:eq": "==",
+                "Core:neq": "!=",
+                "Core:lt": "<",
+                "Core:gt": ">",
+                "Core:lteq": "<=",
+                "Core:gteq": ">=",
+            }[target.name];
+
+            return [lhs, ` ${op} `, rhs];
         }
     }
 
