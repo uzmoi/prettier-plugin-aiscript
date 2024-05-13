@@ -2,6 +2,7 @@ import type { Ast } from "@syuilo/aiscript";
 import { type AstPath, type Doc, type ParserOptions, doc } from "prettier";
 import { type Node } from "../node";
 import { printFunction } from "./function";
+import { printBlock } from "./block";
 
 const { group, line, softline, hardline, indent, ifBreak, join } = doc.builders;
 
@@ -26,15 +27,7 @@ export const printExpression = (
                 print,
             );
         case "block":
-            return group([
-                "{",
-                indent([
-                    hardline,
-                    join(hardline, path.map(print, "statements")),
-                ]),
-                hardline,
-                "}",
-            ]);
+            return printBlock(path as AstPath<Ast.Node>, options, print);
         case "identifier":
             return node.name;
 
@@ -81,7 +74,7 @@ export const printExpression = (
             return group([
                 "@",
                 printFunction(
-                    path as AstPath<Node> & { node: Ast.Fn },
+                    path as AstPath<Ast.Node> & { node: Ast.Fn },
                     options,
                     print,
                 ),

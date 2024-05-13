@@ -2,16 +2,9 @@ import type { Ast } from "@syuilo/aiscript";
 import { type AstPath, type Doc, type ParserOptions, doc } from "prettier";
 import type { Node } from "../node";
 import { printFunction } from "./function";
+import { printBlock } from "./block";
 
-const {
-    group,
-    line,
-    hardline,
-    indent,
-    indentIfBreak,
-    lineSuffixBoundary,
-    join,
-} = doc.builders;
+const { group, line, indent, indentIfBreak, lineSuffixBoundary } = doc.builders;
 
 export const printStatement = (
     path: AstPath<Node> & { node: Ast.Statement },
@@ -43,15 +36,10 @@ export const printStatement = (
                 print,
             );
         case "loop":
-            return group([
-                "loop {",
-                indent([
-                    hardline,
-                    join(hardline, path.map(print, "statements")),
-                ]),
-                hardline,
-                "}",
-            ]);
+            return [
+                "loop ",
+                printBlock(path as AstPath<Ast.Node>, options, print),
+            ];
         case "break":
             return "break";
         case "continue":

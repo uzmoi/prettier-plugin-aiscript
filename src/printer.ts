@@ -2,9 +2,10 @@ import { Ast } from "@syuilo/aiscript";
 import { type AstPath, type Doc, type ParserOptions, doc } from "prettier";
 import { printStatement } from "./print/statement";
 import { printExpression } from "./print/expression";
+import { printBlock, printStatementSequence } from "./print/block";
 import type { Node } from "./node";
 
-const { group, hardline, indent, join } = doc.builders;
+const { hardline } = doc.builders;
 
 export const printAiScript = (
     path: AstPath<Node>,
@@ -16,22 +17,22 @@ export const printAiScript = (
     switch (node.type) {
         case "root":
             return [
-                join([hardline, hardline], path.map(print, "body")),
+                path.call(
+                    path => printStatementSequence(path, options, print),
+                    "body",
+                ),
                 hardline,
             ];
         case "ns":
-            if (node.members.length === 0) {
-                return `:: ${node.name} {}`;
-            }
-            return group([
-                `:: ${node.name} {`,
-                indent([
-                    hardline,
-                    join([hardline, hardline], path.map(print, "members")),
-                ]),
-                hardline,
-                "}",
-            ]);
+            return [
+                `:: ${node.name} `,
+                printBlock(
+                    path as AstPath<Ast.Node>,
+                    options,
+                    print,
+                    "members",
+                ),
+            ];
         case "meta":
             return [
                 "### ",
