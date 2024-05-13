@@ -25,6 +25,9 @@
   "dependencies": {
     "@syuilo/aiscript": "^0.18.0"
   },
+  "peerDependencies": {
+    "prettier": "^3.0.0"
+  },
   "devDependencies": {
     "cspell": "^8.7.0",
     "lefthook": "^1.6.10",
