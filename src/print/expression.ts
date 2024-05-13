@@ -189,7 +189,7 @@ const printTemplate = (
         path.map(
             part =>
                 typeof part.node === "string" ?
-                    part.node
+                    part.node.replace(/[`{]/g, "\\$&")
                 :   ["{", (part as AstPath<Ast.Expression>).call(print), "}"],
             "tmpl",
         ),
