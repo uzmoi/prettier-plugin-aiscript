@@ -38,6 +38,25 @@ const printer: prettier.Printer<Node> = {
         const node = commentPath.node as unknown as Comment;
         return node.type === "comment" ? node.value : "";
     },
+    getCommentChildNodes(node, _options) {
+        switch (node.type) {
+            case "if":
+                return [
+                    node.cond,
+                    node.then,
+                    ...node.elseif.flatMap(({ cond, then }) => [cond, then]),
+                    ...(node.else ? [node.else] : []),
+                ];
+            case "match":
+                return [
+                    node.about,
+                    ...node.qs.flatMap(q => [q.q, q.a]),
+                    ...(node.default ? [node.default] : []),
+                ];
+            case "obj":
+                return [...node.value.values()];
+        }
+    },
 };
 
 const plugin: prettier.Plugin = {
