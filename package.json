@@ -30,6 +30,7 @@
   },
   "devDependencies": {
     "cspell": "^8.7.0",
+    "dedent": "^1.5.3",
     "lefthook": "^1.6.10",
     "prettier": "^3.2.5",
     "tsup": "^8.0.2",
