@@ -1,5 +1,5 @@
 {
-    "tabWidth": 4,
-    "arrowParens": "avoid",
-    "experimentalTernaries": true
+	"useTabs": true,
+	"arrowParens": "avoid",
+	"experimentalTernaries": true
 }

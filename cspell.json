@@ -1,22 +1,22 @@
 {
-    "$schema": "https://raw.githubusercontent.com/streetsidesoftware/cspell/main/cspell.schema.json",
-    "useGitignore": true,
-    "ignorePaths": ["package-lock.json", ".git"],
-    "words": [
-        "aiscript",
-        "gteq",
-        "hardline",
-        "lefthook",
-        "lteq",
-        "Parens",
-        "rizzzse",
-        "softline",
-        "syuilo",
-        "tmpl",
-        "treeshake",
-        "tsbuildinfo",
-        "tsup",
-        "Typecheck",
-        "uzmoi"
-    ]
+	"$schema": "https://raw.githubusercontent.com/streetsidesoftware/cspell/main/cspell.schema.json",
+	"useGitignore": true,
+	"ignorePaths": ["package-lock.json", ".git"],
+	"words": [
+		"aiscript",
+		"gteq",
+		"hardline",
+		"lefthook",
+		"lteq",
+		"Parens",
+		"rizzzse",
+		"softline",
+		"syuilo",
+		"tmpl",
+		"treeshake",
+		"tsbuildinfo",
+		"tsup",
+		"Typecheck",
+		"uzmoi"
+	]
 }
