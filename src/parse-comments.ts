@@ -1,5 +1,6 @@
 import type { Ast } from "@syuilo/aiscript";
 import { parse } from "@syuilo/aiscript/parser/parser.js";
+import type { Comment } from "./node";
 
 // コメントの構文
 // https://github.com/aiscript-dev/aiscript/blob/master/src/parser/parser.peggy#L30
@@ -35,18 +36,19 @@ const getCommentLocations = (source: string, preprocessedString: string) => {
 	return comments;
 };
 
-export const parseComments = (source: string): [Ast.Loc, string][] => {
+export const parseComments = (source: string): Comment[] => {
 	const preprocessedString = parse(source, { startRule: "Preprocess" });
 
-	return getCommentLocations(source, preprocessedString).map(range => [
-		range,
-		source.slice(range.start, range.end),
-	]);
+	return getCommentLocations(source, preprocessedString).map(range => ({
+		type: "comment",
+		value: source.slice(range.start, range.end),
+		loc: range,
+	}));
 };
 
 export const correctLocation = <T extends { loc?: Ast.Loc }>(
 	node: T,
-	comments: Iterable<readonly [Ast.Loc, string]>,
+	comments: Iterable<Comment>,
 ): T => {
 	if (!node.loc) return node;
 
@@ -55,15 +57,15 @@ export const correctLocation = <T extends { loc?: Ast.Loc }>(
 	// AiScriptのパーサーがendに最後の文字のindexを入れるので+1する。
 	end++;
 
-	for (const [loc, { length }] of comments) {
+	for (const { loc, value } of comments) {
 		// コメントの位置がnodeのendよりも前ならendをずらす。
 		if (loc.start >= end) break;
-		end += length;
+		end += value.length;
 
 		// コメントの位置がnodeのstartよりも前ならstartをずらす。
 		// そうでないなら、まだコメントがnodeの内側にある可能性があるのでcontinue。
 		if (loc.start > start) continue;
-		start += length;
+		start += value.length;
 	}
 
 	const loc = { start, end };
