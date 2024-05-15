@@ -82,9 +82,9 @@ export const printExpression = (
 		case "not":
 			return ["!", path.call(print, "expr")];
 		case "and":
-			return [path.call(print, "left"), line, "&& ", path.call(print, "right")];
+			return [path.call(print, "left"), " && ", path.call(print, "right")];
 		case "or":
-			return [path.call(print, "left"), line, "|| ", path.call(print, "right")];
+			return [path.call(print, "left"), " || ", path.call(print, "right")];
 		case "call":
 			return printCall(path, node, print);
 		case "index":
