@@ -12,7 +12,17 @@ const getCommentLocations = (source: string, preprocessedString: string) => {
 
 	for (let i = 0, j = 0; i < source.length; i++) {
 		if (state === null) {
-			if (source[i] === preprocessedString[j++]) continue;
+			// Preprocessで消えている（source[i] !== preprocessedString[j]）ならコメント。
+			// source[i] === "/"の場合、直後のPreprocessで消えていない`/`の可能性があるため、
+			// 次の文字も見る必要がある。
+			// e.g. source=`1/**//2`, preprocessedString=`1/2`
+			if (
+				source[i] === preprocessedString[j] &&
+				(source[i] !== "/" || source[i + 1] === preprocessedString[j + 1])
+			) {
+				j++;
+				continue;
+			}
 
 			switch (source.slice(i, i + 2)) {
 				case "//":
@@ -22,13 +32,17 @@ const getCommentLocations = (source: string, preprocessedString: string) => {
 					state = { type: "mlc", start: i };
 					break;
 				default:
-					throw new Error("Preprocessにコメント以外の差分が存在します。");
+					// sourceとpreprocessedStringが一致せずコメントでもない、すなわち
+					// 閉じタグが無い無効なコメントによってiとjがズレている。
+					// e.g. source=`/**//*`, preprocessedString=`/*`
+					// このようなソースはastパーサーでエラーが出るので、さっさとreturnしてエラーを出してもらう。
+					return [];
 			}
 		} else if (
-			(state.type === "slc" && source[i] === "\n") ||
-			(state.type === "mlc" && source.slice(i - 2, i) === "*/")
+			(state.type === "slc" && source[i + 1] === "\n") ||
+			(state.type === "mlc" && source.endsWith("*/", i + 1))
 		) {
-			comments.push({ start: state.start, end: i });
+			comments.push({ start: state.start, end: i + 1 });
 			state = null;
 		}
 	}
