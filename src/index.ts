@@ -2,6 +2,7 @@ import prettier from "prettier";
 import { printAiScript } from "./printer";
 import type { Comment, Node } from "./node";
 import { parse } from "./parse";
+import { needsParens } from "./needs-parens";
 
 const parser: prettier.Parser<Node> = {
 	parse(text, _options) {
@@ -18,7 +19,11 @@ const parser: prettier.Parser<Node> = {
 
 const printer: prettier.Printer<Node> = {
 	print(path, options, print, _args) {
-		return printAiScript(path, options, print);
+		const doc = printAiScript(path, options, print);
+		if (needsParens(path, options)) {
+			return ["(", doc, ")"];
+		}
+		return doc;
 	},
 	hasPrettierIgnore(path) {
 		const { node } = path;
