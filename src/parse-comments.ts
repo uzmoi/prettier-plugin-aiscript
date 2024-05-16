@@ -47,6 +47,11 @@ const getCommentLocations = (source: string, preprocessedString: string) => {
 		}
 	}
 
+	// 最後の行にslcがあると改行文字が無いのでstateが残る
+	if (state !== null) {
+		comments.push({ start: state.start, end: source.length });
+	}
+
 	return comments;
 };
 
