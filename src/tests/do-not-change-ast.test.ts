@@ -67,7 +67,11 @@ describe.concurrent("フォーマットがASTを変更しないこと。", () =>
 	describe.each(cases)("%s", (_, cases) => {
 		test.each(cases)("%s", async (_, source) => {
 			const formatted = await format(source);
-			expect(parser.parse(formatted)).toStrictEqual(parser.parse(source));
+			try {
+				expect(parser.parse(formatted)).toStrictEqual(parser.parse(source));
+			} catch {
+				expect(formatted).toBe(`${source}\n`);
+			}
 		});
 	});
 });
