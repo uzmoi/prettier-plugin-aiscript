@@ -21,6 +21,7 @@ const cases = Object.entries({
 		"if-then-elif-else":
 			"if (cond1) { 'then1' } elif (cond2) { 'then2' } else { 'else' }",
 		match: "match n { 0 => 'zero' 1 => 'one' * => 'default' }",
+		eval: "eval { 0 }",
 		exists: "exists foo",
 		not: "!a",
 		and: "a && b",

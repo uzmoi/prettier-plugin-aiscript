@@ -22,8 +22,13 @@ export const printExpression = (
 				options,
 				print,
 			);
-		case "block":
-			return printBlock(path as AstPath<Ast.Node>, options, print);
+		case "block": {
+			const block = printBlock(path as AstPath<Ast.Node>, options, print);
+			if (options.originalText.startsWith("eval", options.locStart(node))) {
+				return ["eval ", block];
+			}
+			return block;
+		}
 		case "identifier":
 			return node.name;
 
