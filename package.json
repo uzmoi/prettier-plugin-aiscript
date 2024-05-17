@@ -1,5 +1,5 @@
 {
-  "name": "@rizzzse/prettier-plugin-aiscript",
+  "name": "@uzmoi/prettier-plugin-aiscript",
   "version": "0.1.0",
   "description": "Formatter for AiScript.",
   "type": "module",
