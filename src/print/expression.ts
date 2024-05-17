@@ -225,7 +225,7 @@ const printObject = (
 
 const printCall = (
 	path: AstPath<Node>,
-	node: Ast.Call,
+	node: Ast.Call & Node,
 	print: (path: AstPath<Ast.Node>) => Doc,
 ): Doc => {
 	const { target } = node;
@@ -242,8 +242,7 @@ const printCall = (
 		}
 
 		// 糖衣構文の二項演算子
-		// HACK: 糖衣構文で作られるnodeはlocが無い
-		if (!node.loc && !target.loc) {
+		if (node.sugar) {
 			const lhs = (path as AstPath<Ast.Call>).call(print, "args", 0);
 			const rhs = (path as AstPath<Ast.Call>).call(print, "args", 1);
 

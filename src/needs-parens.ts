@@ -11,11 +11,7 @@ type SugarCallNode = Ast.Call & {
 };
 
 const isSugarCallNode = (node: Node): node is SugarCallNode =>
-	node.type === "call" &&
-	node.target.type === "identifier" &&
-	!node.loc &&
-	!node.target.loc &&
-	node.args.length === 2;
+	node.type === "call" && node.target.type === "identifier" && !!node.sugar;
 
 // https://github.com/aiscript-dev/aiscript/blob/9e618049b5753b26d7527ee736dff10d65289b18/src/parser/plugins/infix-to-fncall.ts#L92-L133
 const opPrecedenceTable = {

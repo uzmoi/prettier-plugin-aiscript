@@ -15,6 +15,22 @@ export const parse = (text: string): Root => {
 
 	const parser = new Parser();
 
+	// HACK: 糖衣構文のノードにはlocが無い。
+	// TODO: 次のアップデートで修正されるので、ソースを見るように変更する。
+	parser.addPlugin(
+		"transform",
+		parserPlugin(node =>
+			(
+				node.loc == null &&
+				node.type === "call" &&
+				node.target.loc == null &&
+				node.args.length === 2
+			) ?
+				{ ...node, sugar: true }
+			:	node,
+		),
+	);
+
 	parser.addPlugin(
 		"transform",
 		parserPlugin(node => correctLocation(node, comments)),
