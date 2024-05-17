@@ -67,10 +67,19 @@ export const parseCommentsByPreprocessDiff = (source: string): Comment[] => {
 	}));
 };
 
-export const correctLocation = <T extends { loc?: Ast.Loc }>(
+export const correctLocation = <T extends { loc?: Ast.Loc; sugar?: true }>(
 	node: T,
 	comments: Iterable<Comment>,
 ): T => {
+	if (node.sugar) {
+		const [lhs, rhs] = (node as unknown as { args: T[] }).args;
+		const locL = correctLocation(lhs, comments).loc;
+		const locR = correctLocation(rhs, comments).loc;
+		if (locL && locR) {
+			const loc = { start: locL.start, end: locR.end };
+			return { ...node, loc };
+		}
+	}
 	if (!node.loc) return node;
 
 	let { start, end } = node.loc;
