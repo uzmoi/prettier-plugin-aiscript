@@ -37,7 +37,7 @@ const printer: prettier.Printer<Node> = {
 		);
 	},
 	canAttachComment(node) {
-		return (node as { type: string }).type !== "comment";
+		return "type" in node && (node.type as string) !== "comment";
 	},
 	printComment(commentPath, _options) {
 		const node = commentPath.node as unknown as Comment;
