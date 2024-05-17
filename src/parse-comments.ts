@@ -5,9 +5,17 @@ import type { Comment } from "./node";
 // コメントの構文
 // https://github.com/aiscript-dev/aiscript/blob/master/src/parser/parser.peggy#L30
 
-const getCommentLocations = (source: string, preprocessedString: string) => {
+/**
+ * aiscript <= 0.18.0 のパーサーのプリプロセスの差分を利用したコメントパーサー
+ */
+export const parseCommentsByPreprocessDiff = (source: string): Comment[] => {
+	// parseの型付けが弱く、anyが返ってくるので型を指定する。
+	// このプリプロセスによってコメントが消えた文字列が得られる。
+	const preprocessedString: string = parse(source, { startRule: "Preprocess" });
+
 	const comments: Ast.Loc[] = [];
 
+	// slc/mlc: single/multi line comment
 	let state: null | { type: "slc" | "mlc"; start: number } = null;
 
 	for (let i = 0, j = 0; i < source.length; i++) {
@@ -52,13 +60,7 @@ const getCommentLocations = (source: string, preprocessedString: string) => {
 		comments.push({ start: state.start, end: source.length });
 	}
 
-	return comments;
-};
-
-export const parseComments = (source: string): Comment[] => {
-	const preprocessedString = parse(source, { startRule: "Preprocess" });
-
-	return getCommentLocations(source, preprocessedString).map(range => ({
+	return comments.map(range => ({
 		type: "comment",
 		value: source.slice(range.start, range.end),
 		loc: range,

@@ -1,6 +1,9 @@
 import { type Cst, Parser } from "@syuilo/aiscript";
 import { visitNode } from "@syuilo/aiscript/parser/visit.js";
-import { correctLocation, parseComments } from "./parse-comments";
+import {
+	correctLocation,
+	parseCommentsByPreprocessDiff,
+} from "./parse-comments";
 import type { Root } from "./node";
 
 export const parserPlugin =
@@ -8,7 +11,7 @@ export const parserPlugin =
 		nodes.map(node => visitNode(node, f));
 
 export const parse = (text: string): Root => {
-	const comments = parseComments(text);
+	const comments = parseCommentsByPreprocessDiff(text);
 
 	const parser = new Parser();
 

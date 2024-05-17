@@ -1,5 +1,8 @@
 import { describe, expect, test } from "vitest";
-import { correctLocation, parseComments } from "./parse-comments";
+import {
+	correctLocation,
+	parseCommentsByPreprocessDiff,
+} from "./parse-comments";
 import type { Comment } from "./node";
 
 const range = (start: number, end: number) => ({ start, end });
@@ -9,18 +12,20 @@ const comment = (value: string, start: number): Comment => ({
 	loc: range(start, start + value.length),
 });
 
-describe("parseComments", () => {
+describe("parseCommentsByPreprocessDiff", () => {
 	test("文字列中のコメントを無視", () => {
-		expect(parseComments('"/**/"')).toEqual([]);
+		expect(parseCommentsByPreprocessDiff('"/**/"')).toEqual([]);
 	});
 	test("連続したコメント", () => {
-		expect(parseComments("/**//**/")).toEqual([
+		expect(parseCommentsByPreprocessDiff("/**//**/")).toEqual([
 			comment("/**/", 0),
 			comment("/**/", 4),
 		]);
 	});
 	test("コメントの直後にコメント以外の/", () => {
-		expect(parseComments("1/**//2")).toEqual([comment("/**/", 1)]);
+		expect(parseCommentsByPreprocessDiff("1/**//2")).toEqual([
+			comment("/**/", 1),
+		]);
 	});
 });
 
