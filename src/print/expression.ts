@@ -1,29 +1,30 @@
 import type { Ast } from "@syuilo/aiscript";
-import { type AstPath, type Doc, type ParserOptions, doc } from "prettier";
+import { type Doc, type ParserOptions, doc } from "prettier";
+import { assert } from "emnorst";
 import type { Node } from "../node";
+import type { AstPath } from "../types";
 import { printFunction } from "./function";
 import { printBlock } from "./block";
 
 const { group, line, softline, hardline, indent, ifBreak, join } = doc.builders;
 
 export const printExpression = (
-	path: AstPath<Node> & { node: Ast.Expression },
-	options: ParserOptions<Ast.Node>,
-	print: (path: AstPath<Ast.Node>) => Doc,
+	path: AstPath<Ast.Expression>,
+	options: ParserOptions<Node>,
+	print: (path: AstPath) => Doc,
 ): Doc => {
 	const { node } = path;
 
 	switch (node.type) {
 		case "if":
-			return printIf(path as AstPath<Node> & { node: Ast.If }, options, print);
+			assert.as<AstPath<typeof node>>(path);
+			return printIf(path, options, print);
 		case "match":
-			return printMatch(
-				path as AstPath<Node> & { node: Ast.Match },
-				options,
-				print,
-			);
+			assert.as<AstPath<typeof node>>(path);
+			return printMatch(path, options, print);
 		case "block": {
-			const block = printBlock(path as AstPath<Ast.Node>, options, print);
+			assert.as<AstPath<typeof node>>(path);
+			const block = printBlock(path, options, print);
 			if (options.originalText.startsWith("eval", options.locStart(node))) {
 				return ["eval ", block];
 			}
@@ -38,11 +39,8 @@ export const printExpression = (
 					`'${node.value.replace(/'/g, "\\'")}'`
 				:	`"${node.value.replace(/"/g, '\\"')}"`;
 		case "tmpl":
-			return printTemplate(
-				path as AstPath<Node> & { node: Ast.Tmpl },
-				options,
-				print,
-			);
+			assert.as<AstPath<typeof node>>(path);
+			return printTemplate(path, options, print);
 		case "num":
 			if (Number.isInteger(node.value)) {
 				// toStringだと巨大な数が1+e10のような指数表記になってしまうため、一旦BigIntに変換
@@ -55,6 +53,7 @@ export const printExpression = (
 		case "null":
 			return "null";
 		case "arr":
+			assert.as<AstPath<typeof node>>(path);
 			return group([
 				"[",
 				indent([
@@ -66,33 +65,30 @@ export const printExpression = (
 				"]",
 			]);
 		case "obj":
-			return printObject(
-				path as AstPath<Node> & { node: Ast.Obj },
-				options,
-				print,
-			);
+			assert.as<AstPath<typeof node>>(path);
+			return printObject(path, options, print);
 		case "fn":
-			return group([
-				"@",
-				printFunction(
-					path as AstPath<Ast.Node> & { node: Ast.Fn },
-					options,
-					print,
-				),
-			]);
+			assert.as<AstPath<typeof node>>(path);
+			return group(["@", printFunction(path, options, print)]);
 
 		// operators
 		case "exists":
+			assert.as<AstPath<typeof node>>(path);
 			return ["exists ", path.call(print, "identifier")];
 		case "not":
+			assert.as<AstPath<typeof node>>(path);
 			return ["!", path.call(print, "expr")];
 		case "and":
+			assert.as<AstPath<typeof node>>(path);
 			return [path.call(print, "left"), " && ", path.call(print, "right")];
 		case "or":
+			assert.as<AstPath<typeof node>>(path);
 			return [path.call(print, "left"), " || ", path.call(print, "right")];
 		case "call":
-			return printCall(path, node, print);
+			assert.as<AstPath<typeof node>>(path);
+			return printCall(path, options, print);
 		case "index":
+			assert.as<AstPath<typeof node>>(path);
 			return [
 				path.call(print, "target"),
 				"[",
@@ -101,15 +97,16 @@ export const printExpression = (
 				"]",
 			];
 		case "prop":
+			assert.as<AstPath<typeof node>>(path);
 			// 改行やスペースは不許可
 			return [path.call(print, "target"), ".", node.name];
 	}
 };
 
 const printIf = (
-	path: AstPath<Node> & { node: Ast.If },
-	_options: ParserOptions<Ast.Node>,
-	print: (path: AstPath<Ast.Node>) => Doc,
+	path: AstPath<Ast.If>,
+	_options: ParserOptions<Node>,
+	print: (path: AstPath) => Doc,
 ): Doc => {
 	const { node } = path;
 
@@ -122,19 +119,14 @@ const printIf = (
 			a => [" elif ", a.call(print, "cond"), " ", a.call(print, "then")],
 			"elseif",
 		),
-		...(node.else ?
-			[
-				" else ",
-				path.call(elseBody => print(elseBody as AstPath<Ast.Node>), "else"),
-			]
-		:	[]),
+		...(node.else ? [" else ", path.call(print, "else")] : []),
 	]);
 };
 
 const printMatch = (
-	path: AstPath<Node> & { node: Ast.Match },
-	_options: ParserOptions<Ast.Node>,
-	print: (path: AstPath<Ast.Node>) => Doc,
+	path: AstPath<Ast.Match>,
+	_options: ParserOptions<Node>,
+	print: (path: AstPath) => Doc,
 ): Doc => {
 	const { node } = path;
 
@@ -148,16 +140,7 @@ const printMatch = (
 				hardline,
 				path.map(q => [q.call(print, "q"), " => ", q.call(print, "a")], "qs"),
 			),
-			...(node.default ?
-				[
-					hardline,
-					"* => ",
-					path.call(
-						defaultBody => print(defaultBody as AstPath<Ast.Node>),
-						"default",
-					),
-				]
-			:	[]),
+			...(node.default ? [hardline, "* => ", path.call(print, "default")] : []),
 		]),
 		hardline,
 		"}",
@@ -165,9 +148,9 @@ const printMatch = (
 };
 
 const printTemplate = (
-	path: AstPath<Node> & { node: Ast.Tmpl },
-	_options: ParserOptions<Ast.Node>,
-	print: (path: AstPath<Ast.Node>) => Doc,
+	path: AstPath<Ast.Tmpl>,
+	_options: ParserOptions<Node>,
+	print: (path: AstPath) => Doc,
 ): Doc => {
 	return [
 		"`",
@@ -175,7 +158,7 @@ const printTemplate = (
 			part =>
 				typeof part.node === "string" ?
 					part.node.replace(/[`{]/g, "\\$&")
-				:	["{", (part as AstPath<Ast.Expression>).call(print), "}"],
+				:	["{", print(part as AstPath<Ast.Expression>), "}"],
 			"tmpl",
 		),
 		"`",
@@ -183,9 +166,9 @@ const printTemplate = (
 };
 
 const printObject = (
-	path: AstPath<Node> & { node: Ast.Obj },
-	_options: ParserOptions<Ast.Node>,
-	print: (path: AstPath<Ast.Node>) => Doc,
+	path: AstPath<Ast.Obj>,
+	_options: ParserOptions<Node>,
+	print: (path: AstPath) => Doc,
 ): Doc => {
 	const { node } = path;
 
@@ -199,9 +182,8 @@ const printObject = (
 	const length = stack.length;
 	try {
 		for (const [key, value] of node.value) {
-			// @ts-expect-error keyの型を無視
 			stack.push(key, value);
-			entries.push([key, print(path as AstPath<Ast.Node>)]);
+			entries.push([key, print(path)]);
 			stack.length -= 2;
 		}
 	} finally {
@@ -224,10 +206,11 @@ const printObject = (
 };
 
 const printCall = (
-	path: AstPath<Node>,
-	node: Ast.Call & Node,
-	print: (path: AstPath<Ast.Node>) => Doc,
+	path: AstPath<Ast.Call>,
+	_options: ParserOptions<Node>,
+	print: (path: AstPath) => Doc,
 ): Doc => {
+	const { node } = path;
 	const { target } = node;
 
 	if (target.type === "identifier") {
@@ -238,13 +221,13 @@ const printCall = (
 			target.loc.start === node.loc?.start &&
 			target.loc.end === node.loc?.end
 		) {
-			return ["<: ", (path as AstPath<Ast.Call>).call(print, "args", 0)];
+			return ["<: ", path.call(print, "args", 0)];
 		}
 
 		// 糖衣構文の二項演算子
 		if (node.sugar) {
-			const lhs = (path as AstPath<Ast.Call>).call(print, "args", 0);
-			const rhs = (path as AstPath<Ast.Call>).call(print, "args", 1);
+			const lhs = path.call(print, "args", 0);
+			const rhs = path.call(print, "args", 1);
 
 			// https://github.com/aiscript-dev/aiscript/blob/master/src/parser/plugins/infix-to-fncall.ts#L87
 			const op = {
@@ -272,10 +255,7 @@ const printCall = (
 	return group([
 		path.call(print, "target"),
 		"(",
-		indent([
-			softline,
-			join([",", line], (path as AstPath<Ast.Call>).map(print, "args")),
-		]),
+		indent([softline, join([",", line], path.map(print, "args"))]),
 		softline,
 		")",
 	]);

@@ -1,6 +1,7 @@
-import type { AstPath, ParserOptions } from "prettier";
+import type { ParserOptions } from "prettier";
 import type { Ast } from "@syuilo/aiscript";
 import type { Node } from "./node";
+import type { AstPath } from "./types";
 
 type SugarCallNode = Ast.Call & {
 	target: {
@@ -40,7 +41,7 @@ const isRhs = (node: Node, parent: OperatorNode): boolean =>
 	(parent.type === "call" ? parent.args[1] : parent.right) === node;
 
 export const needsParens = (
-	path: AstPath<Node>,
+	path: AstPath,
 	_options: ParserOptions,
 ): boolean => {
 	const { node, parent } = path;

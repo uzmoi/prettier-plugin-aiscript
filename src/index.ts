@@ -1,6 +1,7 @@
-import prettier from "prettier";
+import prettier, { type Doc } from "prettier";
 import { printAiScript } from "./printer";
 import type { Comment, Node } from "./node";
+import type { AstPath } from "./types";
 import { parse } from "./parse";
 import { needsParens } from "./needs-parens";
 
@@ -19,8 +20,12 @@ const parser: prettier.Parser<Node> = {
 
 const printer: prettier.Printer<Node> = {
 	print(path, options, print, _args) {
-		const doc = printAiScript(path, options, print);
-		if (needsParens(path, options)) {
+		const doc = printAiScript(
+			path as AstPath,
+			options,
+			print as (path: AstPath) => Doc,
+		);
+		if (needsParens(path as AstPath, options)) {
 			return ["(", doc, ")"];
 		}
 		return doc;

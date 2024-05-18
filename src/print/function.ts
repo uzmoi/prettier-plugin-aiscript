@@ -1,13 +1,15 @@
+import { type Doc, type ParserOptions, doc } from "prettier";
 import type { Ast } from "@syuilo/aiscript";
-import { type AstPath, type Doc, type ParserOptions, doc } from "prettier";
+import type { Node } from "../node";
+import type { AstPath } from "../types";
 import { printBlock } from "./block";
 
 const { group, line, softline, indent, join } = doc.builders;
 
 export const printFunction = (
-	path: AstPath<Ast.Node> & { node: Ast.Fn },
-	options: ParserOptions<Ast.Node>,
-	print: (path: AstPath<Ast.Node>) => Doc,
+	path: AstPath<Ast.Fn>,
+	options: ParserOptions<Node>,
+	print: (path: AstPath) => Doc,
 ) => {
 	return [
 		"(",
@@ -22,6 +24,6 @@ export const printFunction = (
 			softline,
 		]),
 		") ",
-		printBlock(path as AstPath<Ast.Node>, options, print, "children"),
+		printBlock(path, options, print, "children"),
 	];
 };

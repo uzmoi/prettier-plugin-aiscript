@@ -1,28 +1,29 @@
 import type { Ast } from "@syuilo/aiscript";
-import { type AstPath, type Doc, type ParserOptions, doc } from "prettier";
+import { type Doc, type ParserOptions, doc } from "prettier";
+import { assert } from "emnorst";
 import type { Node } from "../node";
+import type { AstPath } from "../types";
 import { printFunction } from "./function";
 import { printBlock } from "./block";
 
 const { group, line, indent, indentIfBreak, lineSuffixBoundary } = doc.builders;
 
 export const printStatement = (
-	path: AstPath<Node> & { node: Ast.Statement },
+	path: AstPath<Ast.Statement>,
 	options: ParserOptions<Node>,
-	print: (path: AstPath<Ast.Node>) => Doc,
+	print: (path: AstPath) => Doc,
 ): Doc => {
 	const { node } = path;
 
 	switch (node.type) {
 		case "def":
-			return printDefinition(
-				path as AstPath<Node> & { node: Ast.Definition },
-				options,
-				print,
-			);
+			assert.as<AstPath<typeof node>>(path);
+			return printDefinition(path, options, print);
 		case "return":
+			assert.as<AstPath<typeof node>>(path);
 			return ["return ", path.call(print, "expr")];
 		case "each":
+			assert.as<AstPath<typeof node>>(path);
 			return group([
 				`each let ${node.var}, `,
 				path.call(print, "items"),
@@ -30,30 +31,32 @@ export const printStatement = (
 				path.call(print, "for"),
 			]);
 		case "for":
-			return printFor(
-				path as AstPath<Node> & { node: Ast.For },
-				options,
-				print,
-			);
+			assert.as<AstPath<typeof node>>(path);
+			return printFor(path, options, print);
 		case "loop":
-			return ["loop ", printBlock(path as AstPath<Ast.Node>, options, print)];
+			assert.as<AstPath<typeof node>>(path);
+			return ["loop ", printBlock(path, options, print)];
 		case "break":
 			return "break";
 		case "continue":
 			return "continue";
 		case "assign":
-			return printAssign(path, print, path.call(print, "dest"));
 		case "addAssign":
-			return printAssign(path, print, path.call(print, "dest"), "+=");
-		case "subAssign":
-			return printAssign(path, print, path.call(print, "dest"), "-=");
+		case "subAssign": {
+			assert.as<AstPath<typeof node>>(path);
+			const op =
+				node.type === "addAssign" ? "+="
+				: node.type === "subAssign" ? "-="
+				: "=";
+			return printAssign(path, print, path.call(print, "dest"), op);
+		}
 	}
 };
 
 const printDefinition = (
-	path: AstPath<Node> & { node: Ast.Definition },
+	path: AstPath<Ast.Definition>,
 	options: ParserOptions<Node>,
-	print: (path: AstPath<Ast.Node>) => Doc,
+	print: (path: AstPath) => Doc,
 ): Doc => {
 	const { node } = path;
 
@@ -73,16 +76,16 @@ const printDefinition = (
 };
 
 const printFor = (
-	path: AstPath<Node> & { node: Ast.For },
+	path: AstPath<Ast.For>,
 	options: ParserOptions<Node>,
-	print: (path: AstPath<Ast.Node>) => Doc,
+	print: (path: AstPath) => Doc,
 ): Doc => {
 	const { node } = path;
 
 	if (node.times) {
 		return group([
 			"for ",
-			path.call(times => print(times as AstPath<Ast.Expression>), "times"),
+			path.call(print, "times"),
 			" ",
 			path.call(print, "for"),
 		]);
@@ -99,7 +102,7 @@ const printFor = (
 		if (isFromOmitted) {
 			return group([
 				`for let ${node.var}, `,
-				path.call(to => print(to as AstPath<Ast.Expression>), "to"),
+				path.call(print, "to"),
 				" ",
 				path.call(print, "for"),
 			]);
@@ -109,9 +112,9 @@ const printFor = (
 			"for let ",
 			node.var,
 			" = ",
-			path.call(from => print(from as AstPath<Ast.Expression>), "from"),
+			path.call(print, "from"),
 			", ",
-			path.call(to => print(to as AstPath<Ast.Expression>), "to"),
+			path.call(print, "to"),
 			" ",
 			path.call(print, "for"),
 		]);
@@ -121,8 +124,8 @@ const printFor = (
 };
 
 const printAssign = (
-	path: AstPath<Node>,
-	print: (path: AstPath<Ast.Node>) => Doc,
+	path: AstPath<Ast.Definition | Ast.Assign | Ast.SubAssign | Ast.AddAssign>,
+	print: (path: AstPath) => Doc,
 	lhs: Doc,
 	op = "=",
 	rhs: Doc = path.call(print, "expr"),

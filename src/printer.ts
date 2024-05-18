@@ -1,46 +1,44 @@
 import { Ast } from "@syuilo/aiscript";
-import { type AstPath, type Doc, type ParserOptions, doc } from "prettier";
+import { type Doc, type ParserOptions, doc } from "prettier";
+import { assert } from "emnorst";
 import { printStatement } from "./print/statement";
 import { printExpression } from "./print/expression";
 import { printBlock, printStatementSequence } from "./print/block";
 import type { Node } from "./node";
+import type { AstPath } from "./types";
 
 const { hardline } = doc.builders;
 
 export const printAiScript = (
-	path: AstPath<Node>,
+	path: AstPath,
 	options: ParserOptions<Node>,
-	print: (path: AstPath<Node>) => Doc,
+	print: (path: AstPath) => Doc,
 ): Doc => {
 	const { node } = path;
 
 	switch (node.type) {
 		case "root":
+			assert.as<AstPath<typeof node>>(path);
 			return [
 				path.call(path => printStatementSequence(path, options, print), "body"),
 				hardline,
 			];
 		case "ns":
-			return [
-				`:: ${node.name} `,
-				printBlock(path as AstPath<Ast.Node>, options, print, "members"),
-			];
+			assert.as<AstPath<typeof node>>(path);
+			return [`:: ${node.name} `, printBlock(path, options, print, "members")];
 		case "meta":
+			assert.as<AstPath<typeof node>>(path);
 			return [
 				"### ",
 				node.name ? ` ${node.name}` : "",
-				(path as AstPath<Ast.Meta>).call(print, "value"),
+				path.call(print, "value"),
 			];
 		case "namedTypeSource":
 		case "fnTypeSource":
 			throw new Error("not implemented.");
 		default:
 			if (Ast.isStatement(node)) {
-				return printStatement(
-					path as AstPath<Node> & { node: Ast.Statement },
-					options,
-					print,
-				);
+				return printStatement(path as AstPath<typeof node>, options, print);
 			}
 			if (
 				node.type === "not" ||
@@ -48,11 +46,7 @@ export const printAiScript = (
 				node.type === "or" ||
 				Ast.isExpression(node)
 			) {
-				return printExpression(
-					path as AstPath<Node> & { node: Ast.Expression },
-					options,
-					print,
-				);
+				return printExpression(path as AstPath<typeof node>, options, print);
 			}
 			throw new TypeError(
 				`Unknown node type: '${(node as { type: string }).type}'.`,
