@@ -3,12 +3,27 @@ import { type Doc, type ParserOptions, doc } from "prettier";
 import { assert } from "emnorst";
 import type { Node } from "../node";
 import type { AstPath } from "../types";
+import { needsParens } from "../needs-parens";
 import { printFunction } from "./function";
 import { printBlock } from "./block";
 
 const { group, line, softline, hardline, indent, ifBreak, join } = doc.builders;
 
 export const printExpression = (
+	path: AstPath<Ast.Expression>,
+	options: ParserOptions<Node>,
+	print: (path: AstPath) => Doc,
+): Doc => {
+	const doc = printExpressionWithoutParens(path, options, print);
+
+	if (needsParens(path, options)) {
+		return group(["(", indent([softline, doc]), softline, ")"]);
+	}
+
+	return doc;
+};
+
+export const printExpressionWithoutParens = (
 	path: AstPath<Ast.Expression>,
 	options: ParserOptions<Node>,
 	print: (path: AstPath) => Doc,
