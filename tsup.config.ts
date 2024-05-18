@@ -8,4 +8,7 @@ export default defineConfig({
 	define: {
 		"import.meta.vitest": "null",
 	},
+	esbuildOptions(options) {
+		(options.dropLabels ??= []).push("dev");
+	},
 });

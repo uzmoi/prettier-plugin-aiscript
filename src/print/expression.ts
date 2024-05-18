@@ -17,13 +17,13 @@ export const printExpression = (
 
 	switch (node.type) {
 		case "if":
-			assert.as<AstPath<typeof node>>(path);
+			dev: assert.as<AstPath<typeof node>>(path);
 			return printIf(path, options, print);
 		case "match":
-			assert.as<AstPath<typeof node>>(path);
+			dev: assert.as<AstPath<typeof node>>(path);
 			return printMatch(path, options, print);
 		case "block": {
-			assert.as<AstPath<typeof node>>(path);
+			dev: assert.as<AstPath<typeof node>>(path);
 			const block = printBlock(path, options, print);
 			if (options.originalText.startsWith("eval", options.locStart(node))) {
 				return ["eval ", block];
@@ -39,7 +39,7 @@ export const printExpression = (
 					`'${node.value.replace(/'/g, "\\'")}'`
 				:	`"${node.value.replace(/"/g, '\\"')}"`;
 		case "tmpl":
-			assert.as<AstPath<typeof node>>(path);
+			dev: assert.as<AstPath<typeof node>>(path);
 			return printTemplate(path, options, print);
 		case "num":
 			if (Number.isInteger(node.value)) {
@@ -53,7 +53,7 @@ export const printExpression = (
 		case "null":
 			return "null";
 		case "arr":
-			assert.as<AstPath<typeof node>>(path);
+			dev: assert.as<AstPath<typeof node>>(path);
 			return group([
 				"[",
 				indent([
@@ -65,30 +65,30 @@ export const printExpression = (
 				"]",
 			]);
 		case "obj":
-			assert.as<AstPath<typeof node>>(path);
+			dev: assert.as<AstPath<typeof node>>(path);
 			return printObject(path, options, print);
 		case "fn":
-			assert.as<AstPath<typeof node>>(path);
+			dev: assert.as<AstPath<typeof node>>(path);
 			return group(["@", printFunction(path, options, print)]);
 
 		// operators
 		case "exists":
-			assert.as<AstPath<typeof node>>(path);
+			dev: assert.as<AstPath<typeof node>>(path);
 			return ["exists ", path.call(print, "identifier")];
 		case "not":
-			assert.as<AstPath<typeof node>>(path);
+			dev: assert.as<AstPath<typeof node>>(path);
 			return ["!", path.call(print, "expr")];
 		case "and":
-			assert.as<AstPath<typeof node>>(path);
+			dev: assert.as<AstPath<typeof node>>(path);
 			return [path.call(print, "left"), " && ", path.call(print, "right")];
 		case "or":
-			assert.as<AstPath<typeof node>>(path);
+			dev: assert.as<AstPath<typeof node>>(path);
 			return [path.call(print, "left"), " || ", path.call(print, "right")];
 		case "call":
-			assert.as<AstPath<typeof node>>(path);
+			dev: assert.as<AstPath<typeof node>>(path);
 			return printCall(path, options, print);
 		case "index":
-			assert.as<AstPath<typeof node>>(path);
+			dev: assert.as<AstPath<typeof node>>(path);
 			return [
 				path.call(print, "target"),
 				"[",
@@ -97,7 +97,7 @@ export const printExpression = (
 				"]",
 			];
 		case "prop":
-			assert.as<AstPath<typeof node>>(path);
+			dev: assert.as<AstPath<typeof node>>(path);
 			// 改行やスペースは不許可
 			return [path.call(print, "target"), ".", node.name];
 	}

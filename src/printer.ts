@@ -18,16 +18,16 @@ export const printAiScript = (
 
 	switch (node.type) {
 		case "root":
-			assert.as<AstPath<typeof node>>(path);
+			dev: assert.as<AstPath<typeof node>>(path);
 			return [
 				path.call(path => printStatementSequence(path, options, print), "body"),
 				hardline,
 			];
 		case "ns":
-			assert.as<AstPath<typeof node>>(path);
+			dev: assert.as<AstPath<typeof node>>(path);
 			return [`:: ${node.name} `, printBlock(path, options, print, "members")];
 		case "meta":
-			assert.as<AstPath<typeof node>>(path);
+			dev: assert.as<AstPath<typeof node>>(path);
 			return [
 				"### ",
 				node.name ? ` ${node.name}` : "",

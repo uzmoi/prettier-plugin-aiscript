@@ -8,6 +8,7 @@
 		"lib": ["ESNext"],
 		"types": ["vitest/importMeta"],
 		"skipLibCheck": true,
+		"allowUnusedLabels": true,
 		"strict": true,
 		"noEmit": true
 	}

@@ -17,13 +17,13 @@ export const printStatement = (
 
 	switch (node.type) {
 		case "def":
-			assert.as<AstPath<typeof node>>(path);
+			dev: assert.as<AstPath<typeof node>>(path);
 			return printDefinition(path, options, print);
 		case "return":
-			assert.as<AstPath<typeof node>>(path);
+			dev: assert.as<AstPath<typeof node>>(path);
 			return ["return ", path.call(print, "expr")];
 		case "each":
-			assert.as<AstPath<typeof node>>(path);
+			dev: assert.as<AstPath<typeof node>>(path);
 			return group([
 				`each let ${node.var}, `,
 				path.call(print, "items"),
@@ -31,10 +31,10 @@ export const printStatement = (
 				path.call(print, "for"),
 			]);
 		case "for":
-			assert.as<AstPath<typeof node>>(path);
+			dev: assert.as<AstPath<typeof node>>(path);
 			return printFor(path, options, print);
 		case "loop":
-			assert.as<AstPath<typeof node>>(path);
+			dev: assert.as<AstPath<typeof node>>(path);
 			return ["loop ", printBlock(path, options, print)];
 		case "break":
 			return "break";
@@ -43,7 +43,7 @@ export const printStatement = (
 		case "assign":
 		case "addAssign":
 		case "subAssign": {
-			assert.as<AstPath<typeof node>>(path);
+			dev: assert.as<AstPath<typeof node>>(path);
 			const op =
 				node.type === "addAssign" ? "+="
 				: node.type === "subAssign" ? "-="
