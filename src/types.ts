@@ -7,7 +7,7 @@ export interface AstPath<T = Node>
 		prettier.AstPath<Node>,
 		"node" | "stack" | "call" | "map" | "each"
 	> {
-	node: T extends Ast.Node ? T & Node : T;
+	node: [T] extends [Ast.Node] ? T & Node : T;
 	root: Root;
 
 	stack: (string | number | Node | Node[])[];

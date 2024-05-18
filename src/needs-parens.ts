@@ -3,17 +3,6 @@ import type { Ast } from "@syuilo/aiscript";
 import type { Node } from "./node";
 import type { AstPath } from "./types";
 
-type SugarCallNode = Ast.Call & {
-	target: {
-		type: "identifier";
-		name: keyof typeof opPrecedenceTable;
-	};
-	args: [Ast.Expression, Ast.Expression];
-};
-
-const isSugarCallNode = (node: Node): node is SugarCallNode =>
-	node.type === "call" && node.target.type === "identifier" && !!node.sugar;
-
 // https://github.com/aiscript-dev/aiscript/blob/9e618049b5753b26d7527ee736dff10d65289b18/src/parser/plugins/infix-to-fncall.ts#L92-L133
 const opPrecedenceTable = {
 	"Core:mul": 7,
@@ -32,35 +21,83 @@ const opPrecedenceTable = {
 	or: 3,
 } as const;
 
-type OperatorNode = Ast.And | Ast.Or | SugarCallNode;
+type SugarCall = Ast.Call & {
+	target: {
+		type: "identifier";
+		name: keyof typeof opPrecedenceTable;
+	};
+	args: [Ast.Expression, Ast.Expression];
+};
 
-const getPrecedence = (node: OperatorNode): number =>
+const isSugarCall = (node: Node): node is SugarCall =>
+	node.type === "call" && !!node.sugar;
+
+type BinaryOperatorNode = Ast.And | Ast.Or | SugarCall;
+
+const isBinaryOperator = (node: Node): node is BinaryOperatorNode =>
+	node.type === "and" ||
+	node.type === "or" ||
+	(node.type === "call" && !!node.sugar);
+
+const getPrecedence = (node: BinaryOperatorNode): number =>
 	opPrecedenceTable[node.type === "call" ? node.target.name : node.type];
 
-const isRhs = (node: Node, parent: OperatorNode): boolean =>
+const isRhs = (node: Node, parent: BinaryOperatorNode): boolean =>
 	(parent.type === "call" ? parent.args[1] : parent.right) === node;
+
+const isTrailing = (parent: Node, key: string | null): boolean =>
+	parent.type === "prop" ||
+	parent.type === "index" ||
+	(parent.type === "call" && key === "target");
 
 export const needsParens = (
 	path: AstPath,
 	_options: ParserOptions,
 ): boolean => {
-	const { node, parent } = path;
+	const { node, parent, key } = path;
 
 	if (parent == null) return false;
 
-	if (
-		(node.type === "and" || node.type === "or" || isSugarCallNode(node)) &&
-		(parent.type === "and" || parent.type === "or" || isSugarCallNode(parent))
-	) {
-		const precedence = getPrecedence(node);
-		const parentPrecedence = getPrecedence(parent);
+	switch (node.type) {
+		case "not":
+		case "fn":
+		case "exists":
+			return isTrailing(parent, key) || isBinaryOperator(parent);
+	}
 
-		if (parentPrecedence > precedence) {
-			return true;
+	// HACK: これがないと型が正常に絞り込まれない。
+	// これがあると何故かisBinaryOperatorでちゃんと絞り込みが効く。
+	// TypeScriptもうやだ！！
+	// つかうのいや！！！
+	// や！！！！！
+	if (import.meta.vitest) {
+		isSugarCall(node) ? 0 : 1;
+		isSugarCall(parent) ? 0 : 1;
+	}
+
+	if (isBinaryOperator(node)) {
+		if (import.meta.vitest) {
+			const { expectTypeOf } = import.meta.vitest;
+			expectTypeOf(node.type).extract<"call">().not.toBeNever();
 		}
 
-		if (isRhs(node, parent) && parentPrecedence === precedence) {
-			return true;
+		if (isTrailing(parent, key)) return true;
+
+		if (isBinaryOperator(parent)) {
+			if (import.meta.vitest) {
+				const { expectTypeOf } = import.meta.vitest;
+				expectTypeOf(parent.type).extract<"call">().not.toBeNever();
+			}
+
+			const precedence = getPrecedence(node);
+			const parentPrecedence = getPrecedence(parent);
+
+			if (
+				parentPrecedence > precedence ||
+				(isRhs(node, parent) && parentPrecedence === precedence)
+			) {
+				return true;
+			}
 		}
 	}
 

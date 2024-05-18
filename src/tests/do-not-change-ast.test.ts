@@ -52,6 +52,15 @@ const cases = Object.entries({
 		namespace: ":: ns { let foo = 0 }",
 	}),
 	括弧: Object.entries({
+		call: "(a + b)()",
+		property: "(a + b).prop",
+		index: "(a + b)[index]",
+
+		function: "(@() {})()",
+		exists: "(exists a) || b",
+		eval: "(eval { a }).b",
+		not: "(!a).b",
+
 		高優先度: "(1 + 2) / (3 + 4)",
 		"同優先度 右結合": "1 - (2 + 3)",
 	}),

@@ -5,4 +5,7 @@ export default defineConfig({
 	format: "esm",
 	sourcemap: true,
 	dts: true,
+	define: {
+		"import.meta.vitest": "null",
+	},
 });
