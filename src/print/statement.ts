@@ -82,16 +82,11 @@ const printFor = (
 ): Doc => {
 	const { node } = path;
 
-	if (node.times) {
-		return group([
-			"for ",
-			path.call(print, "times"),
-			" ",
-			path.call(print, "for"),
-		]);
-	}
+	let enumerator: Doc;
 
-	if (node.var && node.to) {
+	if (node.times) {
+		enumerator = path.call(print, "times");
+	} else if (node.var && node.to) {
 		// HACK: fromを省略した記法でもfromが補完されるので、originalTextのlocの位置を見る
 		const isFromOmitted =
 			node.from === undefined ||
@@ -99,28 +94,17 @@ const printFor = (
 				node.from.value === 0 &&
 				options.originalText[options.locStart(node.from)] !== "0");
 
-		if (isFromOmitted) {
-			return group([
-				`for let ${node.var}, `,
-				path.call(print, "to"),
-				" ",
-				path.call(print, "for"),
-			]);
-		}
-
-		return group([
-			"for let ",
-			node.var,
-			" = ",
-			path.call(print, "from"),
+		enumerator = group([
+			`let ${node.var}`,
+			...(isFromOmitted ? [] : [" = ", path.call(print, "from")]),
 			", ",
 			path.call(print, "to"),
-			" ",
-			path.call(print, "for"),
 		]);
+	} else {
+		throw new Error("Invalid 'for' node.");
 	}
 
-	throw new Error("Invalid 'for' node.");
+	return ["for ", enumerator, " ", path.call(print, "for")];
 };
 
 const printAssign = (
