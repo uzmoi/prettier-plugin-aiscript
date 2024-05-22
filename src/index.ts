@@ -70,6 +70,7 @@ const plugin: prettier.Plugin = {
 			name: "AiScript",
 			parsers: ["aiscript"],
 			extensions: ["is"],
+			vscodeLanguageIds: ["aiscript"],
 		},
 	],
 	parsers: { aiscript: parser },
