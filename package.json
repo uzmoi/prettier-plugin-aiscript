@@ -1,10 +1,12 @@
 {
   "name": "@uzmoi/prettier-plugin-aiscript",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A prettier plugin for AiScript.",
   "type": "module",
   "main": "dist/index.js",
-	"files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "dev": "cd website && npm run dev",
     "build": "tsup",
@@ -17,7 +19,10 @@
     "type": "git",
     "url": "git+https://github.com/uzmoi/prettier-plugin-aiscript.git"
   },
-	"keywords": ["prettier", "AiScript"],
+  "keywords": [
+    "prettier",
+    "AiScript"
+  ],
   "author": "uzmoi",
   "license": "MIT",
   "bugs": {
