@@ -2,6 +2,27 @@ import type { Ast } from "@syuilo/aiscript";
 import { parse } from "@syuilo/aiscript/parser/parser.js";
 import type { Comment } from "../node";
 
+/** aiscript > 0.18.0 用のコメントパーサー */
+export const parseCommentsByStringLocations = (
+	source: string,
+	stringLocations: readonly Ast.Loc[],
+): Comment[] => {
+	// 文字列リテラルを同じ長さの空白に置き換え。
+	const sourceWithoutStrings = stringLocations.reduce(
+		(source, { start, end }) =>
+			source.slice(0, start) + " ".repeat(end - start) + source.slice(end),
+		source,
+	);
+
+	const commentMatches = sourceWithoutStrings.matchAll(/\/\/.*|\/\*[^]*?\*\//g);
+
+	return Array.from(commentMatches, ({ 0: match, index }) => ({
+		type: "comment",
+		value: match,
+		loc: { start: index, end: index + match.length },
+	}));
+};
+
 // コメントの構文
 // https://github.com/aiscript-dev/aiscript/blob/master/src/parser/parser.peggy#L30
 
