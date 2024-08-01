@@ -11,15 +11,32 @@ export const printBlock = (
 	print: (path: AstPath) => Doc,
 	key: "statements" | "children" | "members" = "statements",
 ) => {
-	return group([
-		"{",
-		indent([
+	const { node } = path;
+
+	const values = (node as { [_ in typeof key]?: Node[] })[key] ?? [];
+
+	if (values.length === 0) {
+		return "{}";
+	}
+
+	const shouldBreak = util.hasNewlineInRange(
+		options.originalText,
+		options.locStart(node),
+		values.length ? options.locStart(values[0]) : options.locEnd(node),
+	);
+
+	return group(
+		[
+			"{",
+			indent([
+				line,
+				path.call(path => printStatementSequence(path, options, print), key),
+			]),
 			line,
-			path.call(path => printStatementSequence(path, options, print), key),
-		]),
-		line,
-		"}",
-	]);
+			"}",
+		],
+		{ shouldBreak },
+	);
 };
 
 export const printStatementSequence = (
