@@ -8,7 +8,7 @@
     "dist"
   ],
   "scripts": {
-    "dev": "cd website && npm run dev",
+    "dev": "npm run dev -w website",
     "build": "tsup",
     "check": "tsc",
     "test": "vitest",
@@ -46,5 +46,6 @@
     "tsup": "^8.0.2",
     "typescript": "^5.4.5",
     "vitest": "^1.5.3"
-  }
+  },
+	"workspaces": ["website/"]
 }
