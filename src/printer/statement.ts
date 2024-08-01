@@ -3,6 +3,7 @@ import { type Doc, type ParserOptions, doc } from "prettier";
 import { assert } from "emnorst";
 import type { Node } from "../node";
 import type { AstPath } from "../types";
+import { startsWith } from "../utils";
 import { printFunction } from "./function";
 import { printBlock } from "./block";
 import { getSugarLoopType } from "../sugar";
@@ -61,8 +62,8 @@ const printDefinition = (
 ): Doc => {
 	const { node } = path;
 
-	// HACK: 関数宣言の場合varTypeがundefined、変数宣言だとnull
-	if (node.varType === undefined && node.expr.type === "fn") {
+	// "@"で始まっていれば関数宣言
+	if (node.expr.type === "fn" && startsWith("@", node, options)) {
 		return group([
 			"@",
 			node.name,
@@ -88,12 +89,12 @@ const printFor = (
 	if (node.times) {
 		enumerator = path.call(print, "times");
 	} else if (node.var && node.to) {
-		// HACK: fromを省略した記法でもfromが補完されるので、originalTextのlocの位置を見る
+		// fromを省略した記法でもfromが補完されるので、originalTextのlocの位置を見る
 		const isFromOmitted =
 			node.from === undefined ||
 			(node.from.type === "num" &&
 				node.from.value === 0 &&
-				options.originalText[options.locStart(node.from)] !== "0");
+				!startsWith("0", node.from, options));
 
 		enumerator = group([
 			`let ${node.var}`,

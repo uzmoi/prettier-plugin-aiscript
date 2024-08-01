@@ -1,6 +1,7 @@
 import type { ParserOptions } from "prettier";
 import type { Ast } from "@syuilo/aiscript";
 import type { Node } from "./node";
+import { startsWith } from "./utils";
 
 export type SugarOut = Ast.Call & {
 	target: { type: "identifier"; name: "print" };
@@ -14,7 +15,7 @@ export const isSugarOut = (
 	if (node.type !== "call" || node.args.length !== 1) return false;
 	const { target } = node;
 	if (target.type !== "identifier" || target.name !== "print") return false;
-	return options.originalText.startsWith("<:", options.locStart(target));
+	return startsWith("<:", target, options);
 };
 
 export type SugarCall = Ast.Call & {
@@ -60,10 +61,7 @@ export const isSugarCall = (
 	const { target } = node;
 	if (target.type !== "identifier" || !SUGAR_FNS.has(target.name)) return false;
 	if (target.loc == null) return true;
-	return !options.originalText.startsWith(
-		target.name,
-		options.locStart(target),
-	);
+	return !startsWith(target.name, target, options);
 };
 
 const isSugarLoopIf = (node: Node) =>
@@ -76,17 +74,11 @@ export const getSugarLoopType = (
 	if (node.type !== "loop" || node.statements.length !== 2) return;
 	const [first, second] = node.statements;
 
-	if (
-		isSugarLoopIf(first) &&
-		options.originalText.startsWith("while", options.locStart(node))
-	) {
+	if (isSugarLoopIf(first) && startsWith("while", node, options)) {
 		return "while";
 	}
 
-	if (
-		isSugarLoopIf(second) &&
-		options.originalText.startsWith("do", options.locStart(node))
-	) {
+	if (isSugarLoopIf(second) && startsWith("do", node, options)) {
 		return "do-while";
 	}
 };

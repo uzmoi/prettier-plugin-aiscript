@@ -3,6 +3,7 @@ import { type Doc, type ParserOptions, doc } from "prettier";
 import { assert } from "emnorst";
 import type { Node } from "../node";
 import type { AstPath } from "../types";
+import { startsWith } from "../utils";
 import { needsParens } from "../needs-parens";
 import { printFunction } from "./function";
 import { printBlock } from "./block";
@@ -43,7 +44,7 @@ export const printExpressionWithoutParens = (
 		case "block": {
 			dev: assert.as<AstPath<typeof node>>(path);
 			const block = printBlock(path, options, print);
-			if (options.originalText.startsWith("eval", options.locStart(node))) {
+			if (startsWith("eval", node, options)) {
 				return ["eval ", block];
 			}
 			return block;
