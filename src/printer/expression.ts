@@ -7,6 +7,7 @@ import { needsParens } from "../needs-parens";
 import { printFunction } from "./function";
 import { printBlock } from "./block";
 import { printString, printTemplate } from "./string";
+import { printObject } from "./object";
 
 const { group, line, softline, hardline, indent, ifBreak, join } = doc.builders;
 
@@ -158,46 +159,6 @@ const printMatch = (
 			...(node.default ? [hardline, "* => ", path.call(print, "default")] : []),
 		]),
 		hardline,
-		"}",
-	]);
-};
-
-const printObject = (
-	path: AstPath<Ast.Obj>,
-	_options: ParserOptions<Node>,
-	print: (path: AstPath) => Doc,
-): Doc => {
-	const { node } = path;
-
-	if (node.value.size === 0) {
-		return "{}";
-	}
-
-	const entries: [key: string, value: Doc][] = [];
-
-	const { stack } = path;
-	const length = stack.length;
-	try {
-		for (const [key, value] of node.value) {
-			stack.push(key, value);
-			entries.push([key, print(path)]);
-			stack.length -= 2;
-		}
-	} finally {
-		stack.length = length;
-	}
-
-	return group([
-		"{",
-		indent([
-			line,
-			join(
-				[",", line],
-				entries.map(([key, value]) => [key, ": ", value]),
-			),
-			ifBreak(","),
-		]),
-		line,
 		"}",
 	]);
 };
