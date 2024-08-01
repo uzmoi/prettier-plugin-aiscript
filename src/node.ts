@@ -18,6 +18,4 @@ export type Root = {
 	comments: Comment[];
 };
 
-export type Node =
-	| (Ast.Node & { comments?: Comment[]; sugar?: boolean })
-	| Root;
+export type Node = (Ast.Node & { comments?: Comment[] }) | Root;

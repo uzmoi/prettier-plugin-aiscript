@@ -2,12 +2,13 @@ import type { Ast } from "@syuilo/aiscript";
 import { type Doc, type ParserOptions, doc } from "prettier";
 import type { Node } from "../node";
 import type { AstPath } from "../types";
+import { isSugarCall } from "../sugar";
 
 const { group, line, softline, indent, join } = doc.builders;
 
 export const printCall = (
 	path: AstPath<Ast.Call>,
-	_options: ParserOptions<Node>,
+	options: ParserOptions<Node>,
 	print: (path: AstPath) => Doc,
 ): Doc => {
 	const { node } = path;
@@ -25,7 +26,7 @@ export const printCall = (
 		}
 
 		// 糖衣構文の二項演算子
-		if (node.sugar) {
+		if (isSugarCall(node, options)) {
 			const lhs = path.call(print, "args", 0);
 			const rhs = path.call(print, "args", 1);
 
