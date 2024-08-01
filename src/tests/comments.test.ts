@@ -35,6 +35,14 @@ describe("comment", () => {
 		`;
 		expect(await format(source)).toBe(source);
 	});
+	test("empty block", async () => {
+		const source = "@() { /* comment */ }\n";
+		expect(await format(source)).toBe(source);
+	});
+	test("comment only source", async () => {
+		const source = "// comment\n";
+		expect(await format(source)).toBe(source);
+	});
 });
 
 test("prettier-ignore comment", async () => {

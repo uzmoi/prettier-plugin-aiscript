@@ -2,6 +2,7 @@ import { doc, util, type Doc, type ParserOptions } from "prettier";
 import type { Ast } from "@syuilo/aiscript";
 import type { Node } from "../node";
 import type { AstPath } from "../types";
+import { hasComments, printDanglingComments } from "./comment";
 
 const { group, indent, line, hardline } = doc.builders;
 
@@ -15,7 +16,7 @@ export const printBlock = (
 
 	const values = (node as { [_ in typeof key]?: Node[] })[key] ?? [];
 
-	if (values.length === 0) {
+	if (values.length === 0 && !hasComments(node)) {
 		return "{}";
 	}
 
@@ -30,6 +31,7 @@ export const printBlock = (
 			"{",
 			indent([
 				line,
+				printDanglingComments(path, options),
 				path.call(path => printStatementSequence(path, options, print), key),
 			]),
 			line,

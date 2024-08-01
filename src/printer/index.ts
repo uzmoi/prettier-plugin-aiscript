@@ -4,6 +4,7 @@ import { assert } from "emnorst";
 import { printStatement } from "./statement";
 import { printExpression } from "./expression";
 import { printBlock, printStatementSequence } from "./block";
+import { printDanglingComments } from "./comment";
 import type { Node } from "../node";
 import type { AstPath } from "../types";
 
@@ -21,6 +22,7 @@ export const printAiScript = (
 			dev: assert.as<AstPath<typeof node>>(path);
 			return [
 				path.call(path => printStatementSequence(path, options, print), "body"),
+				printDanglingComments(path, options),
 				hardline,
 			];
 		case "ns":

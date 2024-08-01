@@ -4,6 +4,11 @@ export type Comment = {
 	type: "comment";
 	loc: Ast.Loc;
 	value: string;
+	nodeDescription?: string;
+	placement?: "ownLine" | "endOfLine" | "remaining";
+	leading?: boolean;
+	trailing?: boolean;
+	printed?: boolean;
 };
 
 export type Root = {
