@@ -2,6 +2,21 @@ import type { ParserOptions } from "prettier";
 import type { Ast } from "@syuilo/aiscript";
 import type { Node } from "./node";
 
+export type SugarOut = Ast.Call & {
+	target: { type: "identifier"; name: "print" };
+	args: [Ast.Expression];
+};
+
+export const isSugarOut = (
+	node: Node,
+	options: ParserOptions,
+): node is SugarOut => {
+	if (node.type !== "call" || node.args.length !== 1) return false;
+	const { target } = node;
+	if (target.type !== "identifier" || target.name !== "print") return false;
+	return options.originalText.startsWith("<:", options.locStart(target));
+};
+
 export type SugarCall = Ast.Call & {
 	target: {
 		type: "identifier";
