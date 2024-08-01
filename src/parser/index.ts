@@ -1,20 +1,18 @@
-import { type Cst, Parser } from "@syuilo/aiscript";
-import { visitNode } from "@syuilo/aiscript/parser/visit.js";
+import { Parser } from "@syuilo/aiscript";
 import {
 	correctLocation,
 	parseCommentsByPreprocessDiff,
 } from "./parse-comments";
 import type { Root } from "../node";
-
-export const parserPlugin =
-	(f: (node: Cst.Node) => Cst.Node) => (nodes: Cst.Node[]) =>
-		nodes.map(node => visitNode(node, f));
+import { transformChainPlugin } from "./transform-chain";
+import { parserPlugin } from "./utils";
 
 export const parse = (text: string): Root => {
 	const comments = parseCommentsByPreprocessDiff(text);
 
 	const parser = new Parser();
 
+	parser.addPlugin("transform", transformChainPlugin());
 	parser.addPlugin(
 		"transform",
 		parserPlugin(node => correctLocation(node, comments)),

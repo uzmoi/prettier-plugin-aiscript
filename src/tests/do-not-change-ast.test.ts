@@ -1,6 +1,6 @@
 import { test, expect, describe } from "vitest";
 import { Parser } from "@syuilo/aiscript";
-import { format, parserPlugin } from "./util";
+import { format, parserPlugin } from "./utils";
 
 const cases = Object.entries({
 	literal: Object.entries({

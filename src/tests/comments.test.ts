@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 import dedent from "dedent";
-import { format } from "./util";
+import { format } from "./utils";
 
 describe("comment", () => {
 	test("single line", async () => {

@@ -8,4 +8,4 @@ export const format = (source: string, options?: prettier.Options) =>
 		...options,
 	});
 
-export { parserPlugin } from "../parser";
+export { parserPlugin } from "../parser/utils";
