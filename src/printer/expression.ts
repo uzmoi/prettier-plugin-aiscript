@@ -6,6 +6,7 @@ import type { AstPath } from "../types";
 import { needsParens } from "../needs-parens";
 import { printFunction } from "./function";
 import { printBlock } from "./block";
+import { printString, printTemplate } from "./string";
 
 const { group, line, softline, hardline, indent, ifBreak, join } = doc.builders;
 
@@ -50,9 +51,8 @@ export const printExpressionWithoutParens = (
 
 		// literals
 		case "str":
-			return options.singleQuote ?
-					`'${node.value.replace(/'/g, "\\'")}'`
-				:	`"${node.value.replace(/"/g, '\\"')}"`;
+			dev: assert.as<AstPath<typeof node>>(path);
+			return printString(path, options);
 		case "tmpl":
 			dev: assert.as<AstPath<typeof node>>(path);
 			return printTemplate(path, options, print);
@@ -160,24 +160,6 @@ const printMatch = (
 		hardline,
 		"}",
 	]);
-};
-
-const printTemplate = (
-	path: AstPath<Ast.Tmpl>,
-	_options: ParserOptions<Node>,
-	print: (path: AstPath) => Doc,
-): Doc => {
-	return [
-		"`",
-		path.map(
-			part =>
-				typeof part.node === "string" ?
-					part.node.replace(/[`{]/g, "\\$&")
-				:	["{", print(part as AstPath<Ast.Expression>), "}"],
-			"tmpl",
-		),
-		"`",
-	];
 };
 
 const printObject = (
