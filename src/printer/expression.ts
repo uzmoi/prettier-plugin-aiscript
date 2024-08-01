@@ -4,7 +4,7 @@ import { type Doc, type ParserOptions, doc } from "prettier";
 import { needsParens } from "../needs-parens";
 import type { Node } from "../node";
 import type { AstPath } from "../types";
-import { startsWith } from "../utils";
+import { getNodeSourceCode, startsWith } from "../utils";
 import { printBlock } from "./block";
 import { printCall } from "./call";
 import { printFunction } from "./function";
@@ -60,12 +60,10 @@ export const printExpressionWithoutParens = (
 			dev: assert.as<AstPath<typeof node>>(path);
 			return printTemplate(path, options, print);
 		case "num":
-			if (Number.isInteger(node.value)) {
-				// toStringだと巨大な数が1+e10のような指数表記になってしまうため、一旦BigIntに変換
-				return BigInt(node.value).toString();
+			if (Number.isSafeInteger(node.value)) {
+				return node.value.toString();
 			}
-			// TODO: floatのprint
-			throw new Error("not implemented.");
+			return getNodeSourceCode(node, options) || node.value.toString();
 		case "bool":
 			return node.value ? "true" : "false";
 		case "null":
