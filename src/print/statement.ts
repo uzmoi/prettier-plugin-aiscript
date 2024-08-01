@@ -25,9 +25,9 @@ export const printStatement = (
 		case "each":
 			dev: assert.as<AstPath<typeof node>>(path);
 			return group([
-				`each let ${node.var}, `,
+				`each (let ${node.var}, `,
 				path.call(print, "items"),
-				" ",
+				") ",
 				path.call(print, "for"),
 			]);
 		case "for":
@@ -104,7 +104,7 @@ const printFor = (
 		throw new Error("Invalid 'for' node.");
 	}
 
-	return ["for ", enumerator, " ", path.call(print, "for")];
+	return ["for (", enumerator, ") ", path.call(print, "for")];
 };
 
 const printAssign = (

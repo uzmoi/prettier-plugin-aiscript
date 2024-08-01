@@ -126,12 +126,12 @@ const printIf = (
 	const { node } = path;
 
 	return group([
-		"if ",
+		"if (",
 		path.call(print, "cond"),
-		" ",
+		") ",
 		path.call(print, "then"),
 		path.map(
-			a => [" elif ", a.call(print, "cond"), " ", a.call(print, "then")],
+			a => [" elif (", a.call(print, "cond"), ") ", a.call(print, "then")],
 			"elseif",
 		),
 		...(node.else ? [" else ", path.call(print, "else")] : []),
@@ -146,9 +146,9 @@ const printMatch = (
 	const { node } = path;
 
 	return group([
-		"match ",
+		"match (",
 		path.call(print, "about"),
-		" {",
+		") {",
 		indent([
 			hardline,
 			join(
