@@ -2,7 +2,7 @@ import prettier, { type Doc } from "prettier";
 import { printAiScript } from "./printer";
 import type { Comment, Node } from "./node";
 import type { AstPath } from "./types";
-import { parse } from "./parse";
+import { parse } from "./parser";
 
 const parser: prettier.Parser<Node> = {
 	parse(text, _options) {

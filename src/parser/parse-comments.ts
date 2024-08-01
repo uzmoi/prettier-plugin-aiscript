@@ -1,6 +1,6 @@
 import type { Ast } from "@syuilo/aiscript";
 import { parse } from "@syuilo/aiscript/parser/parser.js";
-import type { Comment } from "./node";
+import type { Comment } from "../node";
 
 // コメントの構文
 // https://github.com/aiscript-dev/aiscript/blob/master/src/parser/parser.peggy#L30

@@ -4,7 +4,7 @@ import {
 	correctLocation,
 	parseCommentsByPreprocessDiff,
 } from "./parse-comments";
-import type { Root } from "./node";
+import type { Root } from "../node";
 
 export const parserPlugin =
 	(f: (node: Cst.Node) => Cst.Node) => (nodes: Cst.Node[]) =>
