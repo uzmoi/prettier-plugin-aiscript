@@ -1,4 +1,4 @@
-import type { Cst, Ast } from "@syuilo/aiscript";
+import type { Ast, Cst } from "@syuilo/aiscript";
 import { parserPlugin } from "./utils";
 
 const transformChain = (node: { chain: Cst.ChainMember[] }) => {

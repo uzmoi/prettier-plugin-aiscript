@@ -1,8 +1,9 @@
-import prettier, { type Doc } from "prettier";
-import { printAiScript } from "./printer";
+import type prettier from "prettier";
+import type { Doc } from "prettier";
 import type { Comment, Node } from "./node";
-import type { AstPath } from "./types";
 import { parse } from "./parser";
+import { printAiScript } from "./printer";
+import type { AstPath } from "./types";
 
 const parser: prettier.Parser<Node> = {
 	parse(text, _options) {

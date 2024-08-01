@@ -1,5 +1,5 @@
-import type prettier from "prettier";
 import type { Ast } from "@syuilo/aiscript";
+import type prettier from "prettier";
 import type { Node, Root } from "./node";
 
 export interface AstPath<T = Node>

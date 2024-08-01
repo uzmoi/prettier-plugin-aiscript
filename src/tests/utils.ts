@@ -8,4 +8,5 @@ export const format = (source: string, options?: prettier.Options) =>
 		...options,
 	});
 
+// biome-ignore lint/performance/noBarrelFile: in test.
 export { parserPlugin } from "../parser/utils";

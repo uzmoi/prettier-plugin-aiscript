@@ -4,6 +4,7 @@
 	"ignorePaths": ["package-lock.json", ".git"],
 	"words": [
 		"aiscript",
+		"biomejs",
 		"emnorst",
 		"gteq",
 		"hardline",

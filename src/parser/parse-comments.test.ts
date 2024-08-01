@@ -1,9 +1,9 @@
 import { describe, expect, test } from "vitest";
+import type { Comment } from "../node";
 import {
 	correctLocation,
 	parseCommentsByPreprocessDiff,
 } from "./parse-comments";
-import type { Comment } from "../node";
 
 const range = (start: number, end: number) => ({ start, end });
 const comment = (value: string, start: number): Comment => ({

@@ -1,15 +1,15 @@
 import type { Ast } from "@syuilo/aiscript";
-import { type Doc, type ParserOptions, doc } from "prettier";
 import { assert } from "emnorst";
+import { type Doc, type ParserOptions, doc } from "prettier";
+import { needsParens } from "../needs-parens";
 import type { Node } from "../node";
 import type { AstPath } from "../types";
 import { startsWith } from "../utils";
-import { needsParens } from "../needs-parens";
-import { printFunction } from "./function";
 import { printBlock } from "./block";
-import { printString, printTemplate } from "./string";
-import { printObject } from "./object";
 import { printCall } from "./call";
+import { printFunction } from "./function";
+import { printObject } from "./object";
+import { printString, printTemplate } from "./string";
 
 const { group, line, softline, hardline, indent, ifBreak, join } = doc.builders;
 

@@ -1,5 +1,5 @@
-import type { ParserOptions } from "prettier";
 import type { Ast } from "@syuilo/aiscript";
+import type { ParserOptions } from "prettier";
 import type { Node } from "./node";
 import { startsWith } from "./utils";
 

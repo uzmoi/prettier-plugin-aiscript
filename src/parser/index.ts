@@ -1,9 +1,9 @@
 import { Parser } from "@syuilo/aiscript";
+import type { Root } from "../node";
 import {
 	correctLocation,
 	parseCommentsByPreprocessDiff,
 } from "./parse-comments";
-import type { Root } from "../node";
 import { transformChainPlugin } from "./transform-chain";
 import { parserPlugin } from "./utils";
 

@@ -1,12 +1,12 @@
 import { Ast } from "@syuilo/aiscript";
-import { type Doc, type ParserOptions, doc } from "prettier";
 import { assert } from "emnorst";
-import { printStatement } from "./statement";
-import { printExpression } from "./expression";
-import { printBlock, printStatementSequence } from "./block";
-import { printDanglingComments } from "./comment";
+import { type Doc, type ParserOptions, doc } from "prettier";
 import type { Node } from "../node";
 import type { AstPath } from "../types";
+import { printBlock, printStatementSequence } from "./block";
+import { printDanglingComments } from "./comment";
+import { printExpression } from "./expression";
+import { printStatement } from "./statement";
 
 const { hardline } = doc.builders;
 

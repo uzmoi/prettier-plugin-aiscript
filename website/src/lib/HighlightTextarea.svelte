@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tokenize, type Token } from "./tokenizer";
+	import { type Token, tokenize } from "./tokenizer";
 
 	export let value = "";
 	export let readonly = false;

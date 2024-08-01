@@ -1,4 +1,4 @@
-import { doc, type ParserOptions } from "prettier";
+import { type ParserOptions, doc } from "prettier";
 import type prettier from "prettier";
 import type { Node } from "../node";
 import type { AstPath } from "../types";

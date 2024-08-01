@@ -1,8 +1,8 @@
 import type { Ast } from "@syuilo/aiscript";
 import { type Doc, type ParserOptions, doc } from "prettier";
 import type { Node } from "../node";
-import type { AstPath } from "../types";
 import { isSugarCall, isSugarOut } from "../sugar";
+import type { AstPath } from "../types";
 
 const { group, line, softline, indent, join } = doc.builders;
 

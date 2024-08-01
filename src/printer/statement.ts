@@ -1,12 +1,12 @@
 import type { Ast } from "@syuilo/aiscript";
-import { type Doc, type ParserOptions, doc } from "prettier";
 import { assert } from "emnorst";
+import { type Doc, type ParserOptions, doc } from "prettier";
 import type { Node } from "../node";
+import { getSugarLoopType } from "../sugar";
 import type { AstPath } from "../types";
 import { startsWith } from "../utils";
-import { printFunction } from "./function";
 import { printBlock } from "./block";
-import { getSugarLoopType } from "../sugar";
+import { printFunction } from "./function";
 
 const { group, line, indent, indentIfBreak, lineSuffixBoundary } = doc.builders;
 
@@ -150,7 +150,7 @@ const printAssign = (
 
 	return group([
 		lhs,
-		" " + op,
+		` ${op}`,
 		group(indent(line), { id: groupId }),
 		lineSuffixBoundary,
 		indentIfBreak(rhs, { groupId }),

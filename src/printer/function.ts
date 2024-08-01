@@ -1,5 +1,5 @@
-import { type Doc, type ParserOptions, doc } from "prettier";
 import type { Ast } from "@syuilo/aiscript";
+import { type Doc, type ParserOptions, doc } from "prettier";
 import type { Node } from "../node";
 import type { AstPath } from "../types";
 import { printBlock } from "./block";

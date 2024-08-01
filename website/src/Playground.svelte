@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { format } from "prettier";
 	import { AiScriptSyntaxError } from "@syuilo/aiscript/error.js";
+	import { format } from "prettier";
 	import plugin from "../../src";
 	import HighlightTextarea from "./lib/HighlightTextarea.svelte";
 

@@ -11,6 +11,7 @@
     "dev": "npm run dev -w website",
     "build": "tsup",
     "check": "tsc",
+    "lint": "biome check",
     "test": "vitest",
     "format": "prettier --check .",
     "spellcheck": "cspell --no-progress ."
@@ -36,6 +37,7 @@
     "prettier": "^3.0.0"
   },
   "devDependencies": {
+    "@biomejs/biome": "^1.8.3",
     "@vitest/coverage-v8": "^2.0.5",
     "@vitest/ui": "^2.0.5",
     "cspell": "^8.13.0",
@@ -47,5 +49,7 @@
     "typescript": "^5.5.4",
     "vitest": "^2.0.5"
   },
-	"workspaces": ["website/"]
+  "workspaces": [
+    "website/"
+  ]
 }

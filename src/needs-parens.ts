@@ -1,8 +1,8 @@
-import type { ParserOptions } from "prettier";
 import type { Ast } from "@syuilo/aiscript";
+import type { ParserOptions } from "prettier";
 import type { Node } from "./node";
+import { type SugarCall, isSugarCall } from "./sugar";
 import type { AstPath } from "./types";
-import { isSugarCall, type SugarCall } from "./sugar";
 
 // https://github.com/aiscript-dev/aiscript/blob/9e618049b5753b26d7527ee736dff10d65289b18/src/parser/plugins/infix-to-fncall.ts#L92-L133
 const opPrecedenceTable = {

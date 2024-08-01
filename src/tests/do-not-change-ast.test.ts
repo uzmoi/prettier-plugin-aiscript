@@ -1,5 +1,5 @@
-import { test, expect, describe } from "vitest";
 import { Parser } from "@syuilo/aiscript";
+import { describe, expect, test } from "vitest";
 import { format, parserPlugin } from "./utils";
 
 const cases = Object.entries({
@@ -70,6 +70,7 @@ const parser = new Parser();
 
 parser.addPlugin(
 	"transform",
+	// biome-ignore lint: in test.
 	parserPlugin(node => (delete node.loc, node)),
 );
 

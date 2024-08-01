@@ -37,7 +37,7 @@ export const tokenize = (code: string): Token[] => {
 			if (options?.template && template === 0) continue;
 			re.lastIndex = i;
 			const match = re.exec(code);
-			if (match && match[0]) {
+			if (match?.[0]) {
 				const [value] = match;
 				i += value.length;
 				if (type === "template") {
