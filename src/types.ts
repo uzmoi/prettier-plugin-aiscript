@@ -21,6 +21,17 @@ export interface AstPath<T = Node>
 		prop1: P1,
 		prop2: P2,
 	): U;
+	call<
+		U,
+		P1 extends KeyOfType<T>,
+		P2 extends KeyOfType<Get<T, P1>>,
+		P3 extends KeyOfType<Get<Get<T, P1>, P2>>,
+	>(
+		callback: (path: AstPath<Get<Get<Get<T, P1>, P2>, P3>>) => U,
+		prop1: P1,
+		prop2: P2,
+		prop3: P3,
+	): U;
 
 	map<U>(callback: (path: AstPath<GetIndex<T>>, index: number) => U): U[];
 	map<U, P1 extends KeyOfType<T, readonly unknown[]>>(

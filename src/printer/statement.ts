@@ -5,6 +5,7 @@ import type { Node } from "../node";
 import type { AstPath } from "../types";
 import { printFunction } from "./function";
 import { printBlock } from "./block";
+import { getSugarLoopType } from "../sugar";
 
 const { group, line, indent, indentIfBreak, lineSuffixBoundary } = doc.builders;
 
@@ -35,7 +36,7 @@ export const printStatement = (
 			return printFor(path, options, print);
 		case "loop":
 			dev: assert.as<AstPath<typeof node>>(path);
-			return ["loop ", printBlock(path, options, print)];
+			return printLoop(path, options, print);
 		case "break":
 			return "break";
 		case "continue":
@@ -105,6 +106,36 @@ const printFor = (
 	}
 
 	return ["for (", enumerator, ") ", path.call(print, "for")];
+};
+
+const printLoop = (
+	path: AstPath<Ast.Loop>,
+	options: ParserOptions<Node>,
+	print: (path: AstPath) => Doc,
+): Doc => {
+	const { node } = path;
+	const type = getSugarLoopType(node, options);
+
+	if (type === "while") {
+		return [
+			"while (",
+			path.call(print, "statements", 0, "cond"),
+			") ",
+			path.call(print, "statements", 1),
+		];
+	}
+
+	if (type === "do-while") {
+		return [
+			"do ",
+			path.call(print, "statements", 0),
+			" while (",
+			path.call(print, "statements", 1, "cond"),
+			")",
+		];
+	}
+
+	return ["loop ", printBlock(path, options, print)];
 };
 
 const printAssign = (

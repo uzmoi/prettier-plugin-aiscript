@@ -65,3 +65,28 @@ export const isSugarCall = (
 		options.locStart(target),
 	);
 };
+
+const isSugarLoopIf = (node: Node) =>
+	node.type === "if" && node.cond.type === "not" && node.then.type === "break";
+
+export const getSugarLoopType = (
+	node: Node,
+	options: ParserOptions,
+): "while" | "do-while" | undefined => {
+	if (node.type !== "loop" || node.statements.length !== 2) return;
+	const [first, second] = node.statements;
+
+	if (
+		isSugarLoopIf(first) &&
+		options.originalText.startsWith("while", options.locStart(node))
+	) {
+		return "while";
+	}
+
+	if (
+		isSugarLoopIf(second) &&
+		options.originalText.startsWith("do", options.locStart(node))
+	) {
+		return "do-while";
+	}
+};
