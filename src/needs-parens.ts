@@ -36,13 +36,13 @@ const getPrecedence = (node: BinaryOperatorNode): number =>
 const isRhs = (node: Node, parent: BinaryOperatorNode): boolean =>
 	(parent.type === "call" ? parent.args[1] : parent.right) === node;
 
-const isTrailing = (parent: Node, key: string | null): boolean =>
+const isTrailingTarget = (node: Node, parent: Node): boolean =>
 	parent.type === "prop" ||
-	parent.type === "index" ||
-	(parent.type === "call" && key === "target");
+	((parent.type === "index" || parent.type === "call") &&
+		parent.target === node);
 
 export const needsParens = (path: AstPath, options: ParserOptions): boolean => {
-	const { node, parent, key } = path;
+	const { node, parent } = path;
 
 	if (parent == null) return false;
 
@@ -50,7 +50,9 @@ export const needsParens = (path: AstPath, options: ParserOptions): boolean => {
 		case "not":
 		case "fn":
 		case "exists":
-			return isTrailing(parent, key) || isBinaryOperator(parent, options);
+			return (
+				isTrailingTarget(node, parent) || isBinaryOperator(parent, options)
+			);
 	}
 
 	// HACK: これがないと型が正常に絞り込まれない。
@@ -67,7 +69,7 @@ export const needsParens = (path: AstPath, options: ParserOptions): boolean => {
 			expectTypeOf(node.type).extract<"call">().not.toBeNever();
 		}
 
-		if (isTrailing(parent, key)) return true;
+		if (isTrailingTarget(node, parent)) return true;
 
 		if (isBinaryOperator(parent, options)) {
 			if (import.meta.vitest) {
