@@ -27,7 +27,7 @@
 					<p>{error.message}</p>
 				{:else if error instanceof Error}
 					<p>Format error.</p>
-					<p>{error.message}</p>
+					<pre>{error.stack || error.message}</pre>
 				{:else}
 					<p>Unknown error.</p>
 				{/if}
@@ -56,5 +56,10 @@
 		padding: 0.6em;
 		font-family: monospace;
 		background-color: #a22;
+	}
+
+	.error pre {
+		white-space: pre-wrap;
+		line-break: anywhere;
 	}
 </style>
