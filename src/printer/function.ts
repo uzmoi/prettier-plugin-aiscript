@@ -10,7 +10,7 @@ export const printFunction = (
 	path: AstPath<Ast.Fn>,
 	options: ParserOptions<Node>,
 	print: (path: AstPath) => Doc,
-) => {
+): Doc => {
 	return [
 		"(",
 		group([
@@ -18,12 +18,18 @@ export const printFunction = (
 				softline,
 				join(
 					[",", line],
-					path.node.args.map(arg => arg.name),
+					path.map(arg => {
+						const { node } = arg;
+						if (node.argType == null) return node.name;
+						return [node.name, ": ", arg.call(print, "argType")];
+					}, "args"),
 				),
 			]),
 			softline,
 		]),
-		") ",
+		")",
+		path.node.retType == null ? "" : [": ", path.call(print, "retType")],
+		" ",
 		printBlock(path, options, print, "children"),
 	];
 };

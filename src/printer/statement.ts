@@ -147,9 +147,16 @@ const printAssign = (
 	rhs: Doc = path.call(print, "expr"),
 ): Doc => {
 	const groupId = Symbol("assign");
+	const { node } = path;
+
+	let type: Doc = "";
+	if (node.type === "def" && node.varType != null) {
+		type = path.call(print, "varType");
+	}
 
 	return group([
 		lhs,
+		type ? [": ", type] : "",
 		` ${op}`,
 		group(indent(line), { id: groupId }),
 		lineSuffixBoundary,
