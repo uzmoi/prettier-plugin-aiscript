@@ -7,6 +7,7 @@ import { printBlock, printStatementSequence } from "./block";
 import { printDanglingComments } from "./comment";
 import { printExpression } from "./expression";
 import { printStatement } from "./statement";
+import { printTypeSource } from "./type-source";
 
 const { hardline } = doc.builders;
 
@@ -37,7 +38,8 @@ export const printAiScript = (
 			];
 		case "namedTypeSource":
 		case "fnTypeSource":
-			throw new Error("not implemented.");
+			dev: assert.as<AstPath<typeof node>>(path);
+			return printTypeSource(path, options, print);
 		default:
 			if (Ast.isStatement(node)) {
 				return printStatement(path as AstPath<typeof node>, options, print);
