@@ -7,6 +7,7 @@ import type { AstPath } from "../types";
 import { getNodeSourceCode, startsWith } from "../utils";
 import { printBlock } from "./block";
 import { printCall } from "./call";
+import { printDanglingComments } from "./comment";
 import { printFunction } from "./function";
 import { printObject } from "./object";
 import { printString, printTemplate } from "./string";
@@ -77,6 +78,7 @@ export const printExpressionWithoutParens = (
 					join([",", line], path.map(print, "value")),
 					ifBreak(","),
 				]),
+				printDanglingComments(path, options),
 				softline,
 				"]",
 			]);

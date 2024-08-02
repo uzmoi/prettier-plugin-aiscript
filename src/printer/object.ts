@@ -2,17 +2,18 @@ import type { Ast } from "@syuilo/aiscript";
 import { type Doc, type ParserOptions, doc } from "prettier";
 import type { Node } from "../node";
 import type { AstPath } from "../types";
+import { hasComments, printDanglingComments } from "./comment";
 
 const { group, line, indent, ifBreak, join } = doc.builders;
 
 export const printObject = (
 	path: AstPath<Ast.Obj>,
-	_options: ParserOptions<Node>,
+	options: ParserOptions<Node>,
 	print: (path: AstPath) => Doc,
 ): Doc => {
 	const { node } = path;
 
-	if (node.value.size === 0) {
+	if (node.value.size === 0 && !hasComments(node)) {
 		return "{}";
 	}
 
@@ -40,6 +41,7 @@ export const printObject = (
 			),
 			ifBreak(","),
 		]),
+		printDanglingComments(path, options),
 		line,
 		"}",
 	]);
