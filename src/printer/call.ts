@@ -4,7 +4,7 @@ import type { Node } from "../node";
 import { isSugarCall, isSugarOut } from "../sugar";
 import type { AstPath } from "../types";
 
-const { group, line, softline, indent, join } = doc.builders;
+const { group, conditionalGroup, line, softline, indent, join } = doc.builders;
 
 export const printCall = (
 	path: AstPath<Ast.Call>,
@@ -43,13 +43,36 @@ export const printCall = (
 	}
 
 	// 通常の関数呼び出し
-	// 末尾カンマは不許可
 
-	return group([
+	return [
 		path.call(print, "target"),
 		"(",
-		indent([softline, join([",", line], path.map(print, "args"))]),
-		softline,
+		printArguments(path, options, print),
 		")",
-	]);
+	];
+};
+
+export const printArguments = (
+	path: AstPath<Ast.Call>,
+	_options: ParserOptions<Node>,
+	print: (path: AstPath) => Doc,
+): Doc => {
+	const args = join([",", line], path.map(print, "args"));
+
+	if (path.node.args.length < 2) {
+		return args;
+	}
+
+	const argsWithIndent = [
+		indent([softline, args]),
+		// 末尾カンマは不許可
+		// ifBreak(","),
+		softline,
+	];
+
+	if (doc.utils.willBreak(args.at(-1)!)) {
+		return conditionalGroup([args, argsWithIndent]);
+	}
+
+	return group(argsWithIndent);
 };
