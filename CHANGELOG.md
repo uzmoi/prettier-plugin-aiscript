@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 - vscodeLanguageIds を追加
+- 拡張子 `.ais` に対応
 - AiScript 0.19.0 に対応
 - if, match, for, each に括弧を追加
 - ブロック内の改行制御を改善

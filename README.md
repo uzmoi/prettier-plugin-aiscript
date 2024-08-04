@@ -1,7 +1,7 @@
 # prettier-plugin-aiscript
 
 prettierのAiScript pluginです。
-`.is`拡張子のファイルをフォーマットします。
+`.is`と`.ais`拡張子のファイルをフォーマットします。
 
 ## Setup
 
