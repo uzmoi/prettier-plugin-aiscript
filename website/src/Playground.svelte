@@ -45,8 +45,9 @@
 	}
 
 	.panel {
-		flex: 1 0 32em;
+		flex: 1 1 32em;
 		overflow-y: auto;
+		min-width: 16em;
 		min-height: 0;
 		max-height: 100%;
 		border: 1px solid #aaa;
