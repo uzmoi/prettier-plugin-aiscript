@@ -7,11 +7,19 @@ export const printString = (
 	path: AstPath<Ast.Str>,
 	options: ParserOptions<Node>,
 ): Doc => {
-	const { node } = path;
+	const { value } = path.node;
 
-	return options.singleQuote ?
-			`'${node.value.replace(/'/g, "\\'")}'`
-		:	`"${node.value.replace(/"/g, '\\"')}"`;
+	const includesSingleQuote = value.includes("'");
+	const includesDoubleQuote = value.includes('"');
+
+	const isSingleQuote =
+		options.singleQuote ?
+			!includesSingleQuote || includesDoubleQuote
+		:	!includesSingleQuote && includesDoubleQuote;
+
+	return isSingleQuote ?
+			`'${value.replace(/'/g, "\\'")}'`
+		:	`"${value.replace(/"/g, '\\"')}"`;
 };
 
 export const printTemplate = (
