@@ -1,5 +1,5 @@
 import type { Ast } from "@syuilo/aiscript";
-import { type Doc, type ParserOptions, doc } from "prettier";
+import { util, type Doc, type ParserOptions, doc } from "prettier";
 import type { Node } from "../node";
 import type { AstPath } from "../types";
 import { hasComments, printDanglingComments } from "./comment";
@@ -17,6 +17,13 @@ export const printObject = (
 		return "{}";
 	}
 
+	const first = node.value.values().next();
+	const shouldBreak = util.hasNewlineInRange(
+		options.originalText,
+		options.locStart(node),
+		first.done ? options.locEnd(node) : options.locStart(first.value),
+	);
+
 	const entries: [key: string, value: Doc][] = [];
 
 	const { stack } = path;
@@ -31,18 +38,21 @@ export const printObject = (
 		stack.length = length;
 	}
 
-	return group([
-		"{",
-		indent([
+	return group(
+		[
+			"{",
+			indent([
+				line,
+				join(
+					[",", line],
+					entries.map(([key, value]) => [key, ": ", value]),
+				),
+				ifBreak(","),
+			]),
+			printDanglingComments(path, options),
 			line,
-			join(
-				[",", line],
-				entries.map(([key, value]) => [key, ": ", value]),
-			),
-			ifBreak(","),
-		]),
-		printDanglingComments(path, options),
-		line,
-		"}",
-	]);
+			"}",
+		],
+		{ shouldBreak },
+	);
 };
