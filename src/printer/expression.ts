@@ -5,14 +5,14 @@ import { needsParens } from "../needs-parens";
 import type { Node } from "../node";
 import type { AstPath } from "../types";
 import { getNodeSourceCode, startsWith } from "../utils";
+import { printArray } from "./array";
 import { printBlock } from "./block";
 import { printCall } from "./call";
-import { printDanglingComments } from "./comment";
 import { printFunction } from "./function";
 import { printObject } from "./object";
 import { printString, printTemplate } from "./string";
 
-const { group, line, softline, hardline, indent, ifBreak, join } = doc.builders;
+const { group, softline, hardline, indent, join } = doc.builders;
 
 export const printExpression = (
 	path: AstPath<Ast.Expression>,
@@ -71,17 +71,7 @@ export const printExpressionWithoutParens = (
 			return "null";
 		case "arr":
 			dev: assert.as<AstPath<typeof node>>(path);
-			return group([
-				"[",
-				indent([
-					softline,
-					join([",", line], path.map(print, "value")),
-					ifBreak(","),
-				]),
-				printDanglingComments(path, options),
-				softline,
-				"]",
-			]);
+			return printArray(path, options, print);
 		case "obj":
 			dev: assert.as<AstPath<typeof node>>(path);
 			return printObject(path, options, print);
