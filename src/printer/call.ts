@@ -70,8 +70,13 @@ export const printArguments = (
 		softline,
 	];
 
-	if (doc.utils.willBreak(args.at(-1)!)) {
-		return conditionalGroup([args, argsWithIndent]);
+	const lastArg = args.at(-1)!;
+
+	if (doc.utils.canBreak(lastArg)) {
+		return conditionalGroup([
+			[...args.slice(0, -1), group(lastArg, { shouldBreak: true })],
+			argsWithIndent,
+		]);
 	}
 
 	return group(argsWithIndent);
