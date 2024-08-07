@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { AISCRIPT_VERSION } from "@syuilo/aiscript/constants.js";
 	import Playground from "./Playground.svelte";
-	import initialCode from "./assets/initial-code.is?raw";
+	import initialCode from "./assets/playground-initial-code.ais?raw";
 </script>
 
 <main>
