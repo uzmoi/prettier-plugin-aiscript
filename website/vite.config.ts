@@ -9,6 +9,9 @@ export default defineConfig({
 			prettier: "prettier/standalone",
 		},
 	},
+	esbuild: {
+		keepNames: true,
+	},
 	build: {
 		rollupOptions: {
 			output: {
