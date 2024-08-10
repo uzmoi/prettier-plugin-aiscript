@@ -57,7 +57,7 @@
 
 	main {
 		flex: 1 1 0;
-		padding: 1em 2em;
+		padding: 0.75em 1em;
 		min-height: 0;
 		container-type: inline-size;
 	}

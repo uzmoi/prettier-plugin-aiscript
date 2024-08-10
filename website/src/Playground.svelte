@@ -55,7 +55,6 @@
 		min-width: 16em;
 		min-height: 0;
 		max-height: 100%;
-		border: 1px solid #aaa;
 	}
 
 	.error {
