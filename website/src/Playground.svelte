@@ -40,12 +40,17 @@
 	.playground {
 		height: 100%;
 		display: flex;
-		flex-flow: row wrap;
+		flex-direction: column;
 		gap: 1em;
+	}
+	@container (min-width: 64em) {
+		.playground {
+			flex-direction: row;
+		}
 	}
 
 	.panel {
-		flex: 1 1 32em;
+		flex: 1 1 0;
 		overflow-y: auto;
 		min-width: 16em;
 		min-height: 0;
