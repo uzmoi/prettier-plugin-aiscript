@@ -11,7 +11,7 @@ export const printBlock = (
 	options: ParserOptions<Node>,
 	print: (path: AstPath) => Doc,
 	key: "statements" | "children" | "members" = "statements",
-) => {
+): Doc => {
 	const { node } = path;
 
 	const values = (node as { [_ in typeof key]?: Node[] })[key] ?? [];
