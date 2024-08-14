@@ -3,6 +3,7 @@ import { type Doc, type ParserOptions, doc } from "prettier";
 import type { Node } from "../node";
 import { isSugarCall, isSugarOut } from "../sugar";
 import type { AstPath } from "../types";
+import { binaryOperator } from "./operator";
 
 const { group, conditionalGroup, line, softline, indent, join } = doc.builders;
 
@@ -39,7 +40,7 @@ export const printCall = (
 			"Core:gteq": ">=",
 		}[node.target.name];
 
-		return [lhs, ` ${op} `, rhs];
+		return binaryOperator(lhs, op, rhs);
 	}
 
 	// 通常の関数呼び出し

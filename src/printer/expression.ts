@@ -10,6 +10,7 @@ import { printBlock } from "./block";
 import { printCall } from "./call";
 import { printFunction } from "./function";
 import { printObject } from "./object";
+import { printBinaryOperator } from "./operator";
 import { printString, printTemplate } from "./string";
 
 const { group, softline, hardline, indent, join } = doc.builders;
@@ -88,10 +89,10 @@ export const printExpressionWithoutParens = (
 			return ["!", path.call(print, "expr")];
 		case "and":
 			dev: assert.as<AstPath<typeof node>>(path);
-			return [path.call(print, "left"), " && ", path.call(print, "right")];
+			return printBinaryOperator("&&", path, options, print);
 		case "or":
 			dev: assert.as<AstPath<typeof node>>(path);
-			return [path.call(print, "left"), " || ", path.call(print, "right")];
+			return printBinaryOperator("||", path, options, print);
 		case "call":
 			dev: assert.as<AstPath<typeof node>>(path);
 			return printCall(path, options, print);
