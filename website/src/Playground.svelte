@@ -9,6 +9,15 @@
 	$: formatting = format(value, {
 		parser: "aiscript",
 		plugins: [plugin],
+	}).then<[string, unknown?]>(formatted => {
+		try {
+			// optionsはパーサーで未使用
+			// 使ったときにすぐ気付いてｶﾞｯできるようにnullを渡す。
+			plugin.parsers!["aiscript"].parse(formatted, null as never);
+			return [formatted];
+		} catch (error) {
+			return [formatted, error];
+		}
 	});
 </script>
 
@@ -19,7 +28,17 @@
 	<div class="panel">
 		{#await formatting}
 			wait...
-		{:then formatted}
+		{:then [formatted, error]}
+			{#if error != null}
+				<div class="error">
+					<p>Format error.</p>
+					{#if error instanceof AiScriptSyntaxError}
+						<p>{error.message}</p>
+					{:else}
+						<p>Unknown error.</p>
+					{/if}
+				</div>
+			{/if}
 			<HighlightTextarea value={formatted} readonly />
 		{:catch error}
 			<div class="error">
