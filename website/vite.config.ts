@@ -23,7 +23,7 @@ export default defineConfig({
 			treeshake: {
 				preset: "smallest",
 				moduleSideEffects(id) {
-					return /\/website\/src\/main.ts$/.test(id);
+					return id.endsWith("/website/src/main.ts");
 				},
 			},
 		},
