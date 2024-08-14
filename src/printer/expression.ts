@@ -97,13 +97,13 @@ export const printExpressionWithoutParens = (
 			return printCall(path, options, print);
 		case "index":
 			dev: assert.as<AstPath<typeof node>>(path);
-			return [
+			return group([
 				path.call(print, "target"),
 				"[",
 				indent([softline, path.call(print, "index")]),
 				softline,
 				"]",
-			];
+			]);
 		case "prop":
 			dev: assert.as<AstPath<typeof node>>(path);
 			// 改行やスペースは不許可
