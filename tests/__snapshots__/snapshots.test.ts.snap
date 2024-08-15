@@ -1,5 +1,22 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`literals > snapshot 1`] = `
+"null
+
+true
+false
+
+42
+6.28
+
+"Hello AiScript!"
+'"'
+
+\`Hello {name}!\`
+\`\\\`\\{\`
+"
+`;
+
 exports[`toplevel > snapshot 1`] = `
 "### {}
 
