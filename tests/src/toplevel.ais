@@ -1,0 +1,20 @@
+### {}
+
+### {
+	hoge: 0
+}
+
+### hoge {}
+
+:: Empty {}
+
+:: A {
+	let hoge = 0
+
+	:: B {
+		let fuga = 2
+		let piyo = 3
+	}
+
+	:: C { let foo = -1 }
+}
