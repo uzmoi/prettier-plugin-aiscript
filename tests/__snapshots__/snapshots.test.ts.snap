@@ -41,6 +41,17 @@ f(
 "
 `;
 
+exports[`definition > snapshot 1`] = `
+"var hoge = 0
+var fuga: str = f()
+
+let c = 299792458
+let g: num = 9.81
+
+let f = @() {}
+"
+`;
+
 exports[`literals > snapshot 1`] = `
 "null
 
