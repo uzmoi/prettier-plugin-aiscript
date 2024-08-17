@@ -1,0 +1,15 @@
+
+// prettier-ignore
+[
+	0, 1,
+	2, 3,
+]
+
+// prettier-ignore
+f()
+
+// prettier-ignore
+target.prop
+
+// prettier-ignore
+target[index]

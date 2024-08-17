@@ -18,10 +18,6 @@ exports[`array > snapshot 1`] = `
   0, //
 ]
 
-[/* */ 0]
-
-[0 /* */]
-
 [
   0,
 ]
@@ -43,10 +39,6 @@ exports[`array > snapshot 1`] = `
   "eleven",
   "twelve",
 ]
-
-// leading comment
-[0, 1, 2]
-// trailing comment
 "
 `;
 
@@ -97,6 +89,31 @@ f(
   },
   last_argument
 )
+"
+`;
+
+exports[`comments > snapshot 1`] = `
+"// comment
+
+/*
+multi
+line
+comment
+*/
+
+// leading comment
+[0, 1, 2] // end of line
+// trailing comment
+
+[/* */ 0]
+
+[0 /* */]
+
+[/* */]
+
+{/* */}
+
+@() { /* */ }
 "
 `;
 
@@ -187,10 +204,24 @@ exports[`object > snapshot 1`] = `
   piyo: // 4
   2,
 }
+"
+`;
 
-// leading comment
-{ hoge: true }
-// trailing comment
+exports[`prettier-ignore > snapshot 1`] = `
+"// prettier-ignore
+[
+	0, 1,
+	2, 3,
+]
+
+// prettier-ignore
+()
+
+// prettier-ignore
+.prop
+
+// prettier-ignore
+[index]
 "
 `;
 

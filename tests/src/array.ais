@@ -17,17 +17,9 @@
 [0 //
 ]
 
-[/* */ 0]
-
-[0 /* */]
-
 [
 0]
 
 [0,1]
 
 ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve"]
-
-// leading comment
-[0, 1, 2]
-// trailing comment

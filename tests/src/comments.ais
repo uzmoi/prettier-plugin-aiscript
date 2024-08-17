@@ -1,0 +1,22 @@
+
+// comment
+
+/*
+multi
+line
+comment
+*/
+
+// leading comment
+[0, 1, 2] // end of line
+// trailing comment
+
+[/* */ 0]
+
+[0 /* */]
+
+[/* */]
+
+{ /* */ }
+
+@() { /* */ }
