@@ -25,6 +25,6 @@ npm install -D prettier @uzmoi/prettier-plugin-aiscript
 
 ```json
 {
-	"plugins": ["@uzmoi/prettier-plugin-aiscript"]
+  "plugins": ["@uzmoi/prettier-plugin-aiscript"]
 }
 ```

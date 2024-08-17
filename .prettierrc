@@ -1,5 +1,11 @@
 {
 	"useTabs": true,
 	"arrowParens": "avoid",
-	"experimentalTernaries": true
+	"experimentalTernaries": true,
+	"overrides": [
+		{
+			"files": "*.md",
+			"options": { "useTabs": false }
+		}
+	]
 }
