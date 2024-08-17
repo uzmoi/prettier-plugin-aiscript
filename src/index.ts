@@ -44,6 +44,9 @@ const printer: prettier.Printer<Node> = {
 		const node = commentPath.node as unknown as Comment;
 		return node.type === "comment" ? node.value : "";
 	},
+	isBlockComment(node) {
+		return (node as unknown as Comment).value.startsWith("/*");
+	},
 	getCommentChildNodes(node, _options) {
 		switch (node.type) {
 			case "if":
