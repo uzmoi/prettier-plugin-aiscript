@@ -215,13 +215,13 @@ exports[`prettier-ignore > snapshot 1`] = `
 ]
 
 // prettier-ignore
-()
+f()
 
 // prettier-ignore
-.prop
+target.prop
 
 // prettier-ignore
-[index]
+target[index]
 "
 `;
 

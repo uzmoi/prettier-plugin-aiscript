@@ -1,5 +1,6 @@
 import type prettier from "prettier";
 import type { Doc } from "prettier";
+import { locEnd, locStart } from "./location";
 import type { Comment, Node } from "./node";
 import { parse } from "./parser";
 import { printAiScript } from "./printer";
@@ -10,12 +11,8 @@ const parser: prettier.Parser<Node> = {
 		return parse(text);
 	},
 	astFormat: "aiscript",
-	locStart(node) {
-		return node.loc?.start ?? 0;
-	},
-	locEnd(node) {
-		return node.loc?.end ?? 0;
-	},
+	locStart,
+	locEnd,
 };
 
 const printer: prettier.Printer<Node> = {
