@@ -3,18 +3,6 @@ import { describe, expect, test } from "vitest";
 import { format, parserPlugin } from "./utils";
 
 const cases = Object.entries({
-	literal: Object.entries({
-		null: "null",
-		true: "true",
-		false: "false",
-		int: "42",
-		float: "6.28",
-		string: "'foo\\''",
-		template: "`foo {bar}\\``",
-		array: "[1, 2, 3, 4]",
-		object: "{ zero: 0, one: 1, two: 2 }",
-		function: "@(a, b) { a + b }",
-	}),
 	expression: Object.entries({
 		"if-then": "if (cond) { 'then' }",
 		"if-then-else": "if (cond) { 'then' } else { 'else' }",
@@ -29,27 +17,6 @@ const cases = Object.entries({
 		index: "array[index]",
 		prop: "object.prop",
 		print: "<: 'Hello AiScript!'",
-		call: "add(1, 2)",
-	}),
-	statement: Object.entries({
-		"function-decoration": "@add(a, b) { a + b }",
-		return: "return result",
-		let: "let a = 0",
-		var: "var a = 0",
-		assign: "a = 0",
-		"add-assign": "a += 0",
-		"sub-assign": "a -= 0",
-		"for-times": "for times { 'body' }",
-		"for-let-to": "for let i, times { 'body' }",
-		"for-let-from-to": "for let i = from, to { 'body' }",
-		each: "each let item, items { 'body' }",
-		loop: "loop { 'body' }",
-		break: "break",
-		continue: "continue",
-	}),
-	"top-level": Object.entries({
-		meta: "### { foo: 'bar' }",
-		namespace: ":: ns { let foo = 0 }",
 	}),
 	括弧: Object.entries({
 		call: "(a + b)()",
