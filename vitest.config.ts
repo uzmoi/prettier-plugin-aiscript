@@ -4,7 +4,6 @@ export default defineConfig({
 	test: {
 		coverage: {
 			enabled: true,
-			reportOnFailure: true,
 			exclude: [...coverageConfigDefaults.exclude, "website/**"],
 		},
 	},
