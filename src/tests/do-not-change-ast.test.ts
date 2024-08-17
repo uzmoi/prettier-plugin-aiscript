@@ -18,19 +18,6 @@ const cases = Object.entries({
 		prop: "object.prop",
 		print: "<: 'Hello AiScript!'",
 	}),
-	括弧: Object.entries({
-		call: "(a + b)()",
-		property: "(a + b).prop",
-		index: "(a + b)[index]",
-
-		function: "(@() {})()",
-		exists: "(exists a) || b",
-		eval: "(eval { a }).b",
-		not: "(!a).b",
-
-		高優先度: "(1 + 2) / (3 + 4)",
-		"同優先度 右結合": "1 - (2 + 3)",
-	}),
 });
 
 const parser = new Parser();

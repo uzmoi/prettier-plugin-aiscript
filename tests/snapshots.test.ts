@@ -16,8 +16,9 @@ parser.plugins.validate.unshift(emptyNsPlugin());
 
 parser.addPlugin(
 	"transform",
+	// @ts-expect-error
 	// biome-ignore lint: in test.
-	parserPlugin(node => (delete node.loc, node)),
+	parserPlugin(node => (delete node.loc, delete node.operatorLoc, node)),
 );
 
 describe.concurrent.each(
