@@ -1,0 +1,26 @@
+
+f()
+
+f(0)
+
+f(0, 1)
+
+f(@() {
+  //
+})
+
+f(0, 1, @() {
+  //
+})
+
+f(super_ultra_hyper_mega_miracle_ultimate_extremely_very_long_argument_expression, @() {
+  //
+})
+
+f({ en: ["foo", "bar", "baz", "qux"], ja: ["hoge", "fuga", "piyo"] }, @(a) { a })
+
+f(@(array) { each (let element, array) { <: `type = {Core:type(element)}, value = {element}` } })
+
+f({
+  hoge: 1
+}, last_argument)

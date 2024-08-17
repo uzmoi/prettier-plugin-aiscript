@@ -1,8 +1,10 @@
+import { AISCRIPT_VERSION } from "@syuilo/aiscript";
 import { describe, expect, test } from "vitest";
 import type { Comment } from "../node";
 import {
 	correctLocation,
 	parseCommentsByPreprocessDiff,
+	parseCommentsByStringLocations,
 } from "./parse-comments";
 
 const range = (start: number, end: number) => ({ start, end });
@@ -12,22 +14,42 @@ const comment = (value: string, start: number): Comment => ({
 	loc: range(start, start + value.length),
 });
 
-describe("parseCommentsByPreprocessDiff", () => {
-	test("文字列中のコメントを無視", () => {
-		expect(parseCommentsByPreprocessDiff('"/**/"')).toEqual([]);
-	});
-	test("連続したコメント", () => {
-		expect(parseCommentsByPreprocessDiff("/**//**/")).toEqual([
-			comment("/**/", 0),
-			comment("/**/", 4),
-		]);
-	});
-	test("コメントの直後にコメント以外の/", () => {
-		expect(parseCommentsByPreprocessDiff("1/**//2")).toEqual([
-			comment("/**/", 1),
-		]);
-	});
-});
+describe.runIf(AISCRIPT_VERSION === "0.19.0")(
+	"parseCommentsByStringLocations",
+	() => {
+		test("文字列中のコメントを無視", () => {
+			expect(
+				parseCommentsByStringLocations('"/**/"', [{ start: 0, end: 6 }]),
+			).toEqual([]);
+		});
+		test("連続したコメント", () => {
+			expect(parseCommentsByStringLocations("/**//**/", [])).toEqual([
+				comment("/**/", 0),
+				comment("/**/", 4),
+			]);
+		});
+	},
+);
+
+describe.skipIf(AISCRIPT_VERSION === "0.19.0")(
+	"parseCommentsByPreprocessDiff",
+	() => {
+		test("文字列中のコメントを無視", () => {
+			expect(parseCommentsByPreprocessDiff('"/**/"')).toEqual([]);
+		});
+		test("連続したコメント", () => {
+			expect(parseCommentsByPreprocessDiff("/**//**/")).toEqual([
+				comment("/**/", 0),
+				comment("/**/", 4),
+			]);
+		});
+		test("コメントの直後にコメント以外の/", () => {
+			expect(parseCommentsByPreprocessDiff("1/**//2")).toEqual([
+				comment("/**/", 1),
+			]);
+		});
+	},
+);
 
 describe("correctLocation", () => {
 	const loc = range(100, 200);

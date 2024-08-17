@@ -8,8 +8,20 @@ import {
 import { transformChainPlugin } from "./transform-chain";
 import { parserPlugin } from "./utils";
 
+export const emptyNsPlugin = () =>
+	parserPlugin(node => {
+		if (node.type === "ns") {
+			node.members ??= [];
+		}
+		return node;
+	});
+
 const parse_0_19_0 = (source: string): Root => {
 	const parser = new Parser();
+
+	// @ts-expect-error
+	parser.plugins.validate.unshift(emptyNsPlugin());
+
 	parser.addPlugin("transform", transformChainPlugin());
 	parser.addPlugin(
 		"transform",
@@ -45,6 +57,10 @@ const parse_before_0_19_0 = (source: string): Root => {
 	const comments = parseCommentsByPreprocessDiff(source);
 
 	const parser = new Parser();
+
+	// @ts-expect-error
+	parser.plugins.validate.unshift(emptyNsPlugin());
+
 	parser.addPlugin("transform", transformChainPlugin());
 	parser.addPlugin(
 		"transform",
