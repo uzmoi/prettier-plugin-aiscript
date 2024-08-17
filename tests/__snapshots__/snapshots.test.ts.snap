@@ -231,7 +231,7 @@ exports[`toplevel > snapshot 1`] = `
   hoge: 0,
 }
 
-###  hoge{}
+### hoge {}
 
 :: Empty {}
 

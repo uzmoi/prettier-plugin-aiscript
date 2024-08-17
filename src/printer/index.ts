@@ -33,7 +33,7 @@ export const printAiScript = (
 			dev: assert.as<AstPath<typeof node>>(path);
 			return [
 				"### ",
-				node.name ? ` ${node.name}` : "",
+				node.name ? [node.name, " "] : "",
 				path.call(print, "value"),
 			];
 		case "namedTypeSource":
