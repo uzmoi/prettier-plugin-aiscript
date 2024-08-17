@@ -1,5 +1,5 @@
 import { AISCRIPT_VERSION, type Ast, Parser } from "@syuilo/aiscript";
-import { coerce, satisfies } from "semver";
+import { cmp, coerce, satisfies } from "semver";
 import type { Root } from "../node";
 import {
 	correctLocation,
@@ -80,5 +80,9 @@ export const parse = (text: string): Root => {
 		return parse_0_19_0(text);
 	}
 
-	return parse_before_0_19_0(text);
+	if (cmp(version, "<", "0.19.0")) {
+		return parse_before_0_19_0(text);
+	}
+
+	throw new Error(`Unsupported AiScript version: ${AISCRIPT_VERSION}`);
 };
