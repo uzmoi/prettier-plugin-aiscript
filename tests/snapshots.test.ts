@@ -1,7 +1,7 @@
 import { Parser } from "@syuilo/aiscript";
 import { describe, test } from "vitest";
 import { emptyNsPlugin } from "../src/parser";
-import { format, parserPlugin } from "../src/tests/utils";
+import { format, parserPlugin } from "./utils";
 
 const cases = import.meta.glob<string>("./src/*.ais", {
 	eager: true,

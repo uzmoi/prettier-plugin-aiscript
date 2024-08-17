@@ -1,5 +1,5 @@
 import * as prettier from "prettier";
-import plugin from "..";
+import plugin from "../src";
 
 export const format = (source: string, options?: prettier.Options) =>
 	prettier.format(source, {
@@ -9,4 +9,4 @@ export const format = (source: string, options?: prettier.Options) =>
 	});
 
 // biome-ignore lint/performance/noBarrelFile: in test.
-export { parserPlugin } from "../parser/utils";
+export { parserPlugin } from "../src/parser/utils";
