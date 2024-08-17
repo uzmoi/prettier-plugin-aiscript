@@ -9,7 +9,14 @@
 f()
 
 // prettier-ignore
+1 + 2
+
+// prettier-ignore
 target.prop
 
 // prettier-ignore
 target[index]
+
+// TODO: https://github.com/uzmoi/prettier-plugin-aiscript/issues/4
+// // prettier-ignore
+// (1 + 2) * 3

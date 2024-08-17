@@ -1,6 +1,11 @@
 import type { Node } from "./node";
+import { isSugarCall } from "./sugar";
 
 export const locStart = (node: Node): number => {
+	if (isSugarCall(node)) {
+		return locStart(node.args[0]);
+	}
+
 	if ("target" in node) {
 		return locStart(node.target);
 	}
