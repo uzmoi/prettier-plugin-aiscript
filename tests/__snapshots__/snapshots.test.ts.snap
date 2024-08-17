@@ -122,6 +122,30 @@ let f = @() {}
 "
 `;
 
+exports[`function > snapshot 1`] = `
+"@f() {}
+
+@f(param) {}
+
+@f(
+  parameter1,
+  parameter2,
+  parameter3,
+  parameter4,
+  parameter5,
+  parameter6,
+  parameter7,
+  parameter8
+) {}
+
+@add(a, b) { a + b }
+
+@double(a: num) { a * 2 }
+
+@() {}
+"
+`;
+
 exports[`literals > snapshot 1`] = `
 "null
 
