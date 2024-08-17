@@ -1,6 +1,6 @@
 {
   "name": "@uzmoi/prettier-plugin-aiscript",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "A prettier plugin for AiScript.",
   "type": "module",
   "main": "dist/index.js",
