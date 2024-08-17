@@ -20,7 +20,7 @@ jobs:
 
       - run: npm ci
       - run: npm i @syuilo/aiscript@^${{ matrix.aiscript-version }}
-      - run: npm test
+      - run: npm test -- --coverage
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4
