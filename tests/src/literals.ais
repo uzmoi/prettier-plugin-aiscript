@@ -9,6 +9,10 @@ false
 
 "Hello AiScript!"
 "\""
+// TODO: "\\"
+"\"'"
 
 `Hello {name}!`
-`\`\{`
+`\``
+`\{`
+// TODO: `\\`
