@@ -10,3 +10,6 @@ run = "npx biome check --no-errors-on-unmatched {staged_files}"
 
 [pre-commit.commands.cSpell]
 run = "npx cspell lint --no-progress --no-must-find-files {staged_files}"
+
+[pre-commit.commands.test]
+run = "npm test -- --run"
