@@ -12,15 +12,7 @@ exports[`array > snapshot 1`] = `
 // 	//
 // ]
 
-[
-  0,
-
-
-
-
-
-
-]
+[0]
 
 [0]
 
@@ -58,6 +50,10 @@ exports[`array > snapshot 1`] = `
   "eleven",
   "twelve",
 ]
+
+// leading comment
+[0, 1, 2]
+// trailing comment
 "
 `;
 
@@ -177,12 +173,7 @@ exports[`object > snapshot 1`] = `
 // 	//
 // }
 
-{
-  hoge: 0,
-
-
-
-}
+{ hoge: 0 }
 
 { hoge: 0, fuga: 1 }
 
@@ -203,6 +194,10 @@ exports[`object > snapshot 1`] = `
   piyo: // 4
   2,
 }
+
+// leading comment
+{ hoge: true }
+// trailing comment
 "
 `;
 

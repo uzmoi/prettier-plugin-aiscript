@@ -32,3 +32,7 @@
 	// 4
 	piyo: 2,
 }
+
+// leading comment
+{ hoge: true }
+// trailing comment
