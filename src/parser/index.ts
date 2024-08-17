@@ -1,4 +1,5 @@
 import { AISCRIPT_VERSION, type Ast, Parser } from "@syuilo/aiscript";
+import { coerce, satisfies } from "semver";
 import type { Root } from "../node";
 import {
 	correctLocation,
@@ -73,8 +74,11 @@ const parse_before_0_19_0 = (source: string): Root => {
 };
 
 export const parse = (text: string): Root => {
-	if ((AISCRIPT_VERSION as string) === "0.19.0") {
+	const version = coerce(AISCRIPT_VERSION)!;
+
+	if (satisfies(version, "0.19")) {
 		return parse_0_19_0(text);
 	}
+
 	return parse_before_0_19_0(text);
 };

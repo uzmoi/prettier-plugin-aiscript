@@ -1,4 +1,5 @@
 import { AISCRIPT_VERSION } from "@syuilo/aiscript";
+import { cmp } from "semver";
 import { describe, expect, test } from "vitest";
 import type { Comment } from "../node";
 import {
@@ -14,7 +15,7 @@ const comment = (value: string, start: number): Comment => ({
 	loc: range(start, start + value.length),
 });
 
-describe.runIf(AISCRIPT_VERSION === "0.19.0")(
+describe.runIf(cmp(AISCRIPT_VERSION, "==", "0.19.0"))(
 	"parseCommentsByStringLocations",
 	() => {
 		test("文字列中のコメントを無視", () => {
@@ -31,7 +32,7 @@ describe.runIf(AISCRIPT_VERSION === "0.19.0")(
 	},
 );
 
-describe.skipIf(AISCRIPT_VERSION === "0.19.0")(
+describe.runIf(cmp(AISCRIPT_VERSION, "<", "0.19.0"))(
 	"parseCommentsByPreprocessDiff",
 	() => {
 		test("文字列中のコメントを無視", () => {
