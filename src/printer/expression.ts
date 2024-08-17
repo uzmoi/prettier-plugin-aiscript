@@ -22,7 +22,7 @@ export const printExpression = (
 ): Doc => {
 	const doc = printExpressionWithoutParens(path, options, print);
 
-	if (needsParens(path, options)) {
+	if (needsParens(path)) {
 		return group(["(", indent([softline, doc]), softline, ")"]);
 	}
 

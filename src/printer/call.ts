@@ -20,7 +20,7 @@ export const printCall = (
 	}
 
 	// 糖衣構文の二項演算子
-	if (isSugarCall(node, options)) {
+	if (isSugarCall(node)) {
 		const lhs = path.call(print, "args", 0);
 		const rhs = path.call(print, "args", 1);
 

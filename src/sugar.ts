@@ -53,15 +53,13 @@ const SUGAR_FNS = new Set([
 	"Core:gteq",
 ]);
 
-export const isSugarCall = (
-	node: Node,
-	options: ParserOptions,
-): node is SugarCall => {
+export const isSugarCall = (node: Node): node is SugarCall => {
 	if (node.type !== "call" || node.args.length !== 2) return false;
 	const { target } = node;
 	if (target.type !== "identifier" || !SUGAR_FNS.has(target.name)) return false;
 	if (target.loc == null) return true;
-	return !startsWith(target.name, target, options);
+	const { start, end } = target.loc;
+	return target.name.length !== end - start;
 };
 
 const isSugarLoopIf = (node: Node) =>

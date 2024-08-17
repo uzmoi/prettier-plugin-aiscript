@@ -1,5 +1,4 @@
 import type { Ast } from "@syuilo/aiscript";
-import type { ParserOptions } from "prettier";
 import type { Node } from "./node";
 import { type SugarCall, isSugarCall } from "./sugar";
 import type { AstPath } from "./types";
@@ -24,11 +23,8 @@ const opPrecedenceTable = {
 
 type BinaryOperatorNode = Ast.And | Ast.Or | SugarCall;
 
-const isBinaryOperator = (
-	node: Node,
-	options: ParserOptions,
-): node is BinaryOperatorNode =>
-	node.type === "and" || node.type === "or" || isSugarCall(node, options);
+const isBinaryOperator = (node: Node): node is BinaryOperatorNode =>
+	node.type === "and" || node.type === "or" || isSugarCall(node);
 
 const getPrecedence = (node: BinaryOperatorNode): number =>
 	opPrecedenceTable[node.type === "call" ? node.target.name : node.type];
@@ -41,7 +37,7 @@ const isTrailingTarget = (node: Node, parent: Node): boolean =>
 	((parent.type === "index" || parent.type === "call") &&
 		parent.target === node);
 
-export const needsParens = (path: AstPath, options: ParserOptions): boolean => {
+export const needsParens = (path: AstPath): boolean => {
 	const { node, parent } = path;
 
 	if (parent == null) return false;
@@ -50,20 +46,18 @@ export const needsParens = (path: AstPath, options: ParserOptions): boolean => {
 		case "not":
 		case "fn":
 		case "exists":
-			return (
-				isTrailingTarget(node, parent) || isBinaryOperator(parent, options)
-			);
+			return isTrailingTarget(node, parent) || isBinaryOperator(parent);
 	}
 
 	// HACK: これがないと型が正常に絞り込まれない。
 	// これがあると何故かisBinaryOperatorでちゃんと絞り込みが効く。
 	// TypeScript何もわからん
 	if (import.meta.vitest) {
-		isSugarCall(node, options) ? 0 : 1;
-		isSugarCall(parent, options) ? 0 : 1;
+		isSugarCall(node) ? 0 : 1;
+		isSugarCall(parent) ? 0 : 1;
 	}
 
-	if (isBinaryOperator(node, options)) {
+	if (isBinaryOperator(node)) {
 		if (import.meta.vitest) {
 			const { expectTypeOf } = import.meta.vitest;
 			expectTypeOf(node.type).extract<"call">().not.toBeNever();
@@ -71,7 +65,7 @@ export const needsParens = (path: AstPath, options: ParserOptions): boolean => {
 
 		if (isTrailingTarget(node, parent)) return true;
 
-		if (isBinaryOperator(parent, options)) {
+		if (isBinaryOperator(parent)) {
 			if (import.meta.vitest) {
 				const { expectTypeOf } = import.meta.vitest;
 				expectTypeOf(parent.type).extract<"call">().not.toBeNever();
