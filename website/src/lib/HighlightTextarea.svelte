@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { LinesAndColumns } from "lines-and-columns";
 	import { type Token, tokenize } from "./tokenizer";
 
 	export let value = "";
@@ -19,11 +20,33 @@
 		}
 		lines.push(line);
 	}
+
+	$: linesAndColumns = new LinesAndColumns(value);
+	let selection: [number] | [number, number] = [0];
+	const handleSelectionChange = (e: Event) => {
+		const { selectionStart: start, selectionEnd: end } =
+			e.currentTarget as HTMLTextAreaElement;
+
+		selection = start === end ? [start] : [start, end];
+	};
 </script>
 
 <div class="container">
+	<div class="sticky-header">
+		<div class="selection-location">
+			{selection
+				.map(index => {
+					const location = linesAndColumns.locationForIndex(index);
+					if (location == null) return "?";
+					return `line ${location.line + 1}, column ${location.column + 1}`;
+				})
+				.join(" ~ ")}
+		</div>
+	</div>
 	<textarea
 		bind:value
+		on:input={handleSelectionChange}
+		on:selectionchange={handleSelectionChange}
 		{readonly}
 		class="code"
 		autocomplete="off"
@@ -49,6 +72,28 @@
 	.container {
 		position: relative;
 		background-color: #333;
+	}
+
+	.sticky-header {
+		position: sticky;
+		z-index: 1;
+		top: 0;
+	}
+
+	.selection-location {
+		position: absolute;
+		right: 0;
+		padding: 0 0.5em;
+		font-size: 14px;
+		color: #ccc;
+		background-color: #3338;
+		pointer-events: none;
+		opacity: 0;
+		transition: opacity 100ms;
+	}
+
+	.container:focus-within .selection-location {
+		opacity: 1;
 	}
 
 	.code {
