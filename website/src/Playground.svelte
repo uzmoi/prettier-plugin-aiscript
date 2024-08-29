@@ -80,7 +80,8 @@
 
 	.error {
 		padding: 0.6em;
-		font-family: monospace;
+		font-family: "Inconsolata", monospace;
+		font-size: 14px;
 		background-color: #a22;
 	}
 

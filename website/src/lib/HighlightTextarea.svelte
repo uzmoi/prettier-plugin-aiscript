@@ -52,7 +52,8 @@
 	}
 
 	.code {
-		font-family: monospace;
+		font-family: "Inconsolata", monospace;
+		font-size: 14px;
 		padding: 0.6em;
 		padding-left: 3.5em;
 		line-break: anywhere;
