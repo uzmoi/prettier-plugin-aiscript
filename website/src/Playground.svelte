@@ -1,14 +1,16 @@
 <script lang="ts">
 	import { AiScriptSyntaxError } from "@syuilo/aiscript/error.js";
-	import { format } from "prettier";
+	import { type Options, format } from "prettier";
 	import plugin from "../../src";
 	import HighlightTextarea from "./lib/HighlightTextarea.svelte";
 
 	export let value = "";
+	export let options: Options = {};
 
 	$: formatting = format(value, {
 		parser: "aiscript",
 		plugins: [plugin],
+		...options,
 	}).then<[string, unknown?]>(formatted => {
 		try {
 			// optionsはパーサーで未使用
@@ -21,7 +23,7 @@
 	});
 </script>
 
-<div class="playground">
+<div class="playground" style:tab-size={options.tabWidth ?? 2}>
 	<div class="panel">
 		<HighlightTextarea bind:value />
 	</div>
