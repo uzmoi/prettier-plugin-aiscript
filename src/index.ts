@@ -76,6 +76,15 @@ const plugin: prettier.Plugin = {
 	],
 	parsers: { aiscript: parser },
 	printers: { aiscript: printer },
+	options: {
+		// https://github.com/prettier/prettier/blob/90f036500c8f9240227246f171b4aafa5d76e589/src/common/common-options.evaluate.js#L12-L17
+		singleQuote: {
+			category: "Common",
+			type: "boolean",
+			default: false,
+			description: "Use single quotes instead of double quotes.",
+		},
+	},
 };
 
 export default plugin;
