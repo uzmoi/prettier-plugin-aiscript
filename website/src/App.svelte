@@ -34,8 +34,7 @@
 				printWidth <input type="number" bind:value={printWidth} />
 			</label>
 			<label>
-				tabWidth
-				<select bind:value={tabWidth}>
+				tabWidth <select bind:value={tabWidth}>
 					<option value={2}>2</option>
 					<option value={4}>4</option>
 					<option value={8}>8</option>
