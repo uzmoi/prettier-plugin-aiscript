@@ -1,26 +1,28 @@
 <script lang="ts">
-	import { AiScriptSyntaxError } from "@syuilo/aiscript/error.js";
-	import { type Options, format } from "prettier";
-	import plugin from "../../src";
+	import { wrap } from "comlink";
+	import type { Options } from "prettier";
 	import HighlightTextarea from "./lib/HighlightTextarea.svelte";
+	import type { exports } from "./worker";
+	import Worker from "./worker?worker";
 
 	export let value = "";
 	export let options: Options = {};
 
-	$: formatting = format(value, {
-		parser: "aiscript",
-		plugins: [plugin],
-		...options,
-	}).then<[string, unknown?]>(formatted => {
+	const worker = wrap<typeof exports>(new Worker());
+
+	let formatted: string | null = null;
+	let error: unknown;
+
+	const format = async (value: string, options: Options) => {
 		try {
-			// optionsはパーサーで未使用
-			// 使ったときにすぐ気付いてｶﾞｯできるようにnullを渡す。
-			plugin.parsers!["aiscript"].parse(formatted, null as never);
-			return [formatted];
-		} catch (error) {
-			return [formatted, error];
+			[formatted, error] = await worker.format(value, options);
+		} catch (e) {
+			formatted = null;
+			error = e;
 		}
-	});
+	};
+
+	$: format(value, options);
 </script>
 
 <div class="playground" style:tab-size={options.tabWidth ?? 2}>
@@ -28,32 +30,23 @@
 		<HighlightTextarea bind:value />
 	</div>
 	<div class="panel">
-		{#await formatting}
-			wait...
-		{:then [formatted, error]}
-			{#if error != null}
-				<div class="error">
-					<p>Format error.</p>
-					{#if error instanceof AiScriptSyntaxError}
+		{#if error != null}
+			<div class="error">
+				{#if error instanceof Error}
+					{#if error.name === "Syntax"}
 						<p>{error.message}</p>
 					{:else}
-						<p>Unknown error.</p>
+						<p>Format error.</p>
+						<pre>{error.stack || error.message}</pre>
 					{/if}
-				</div>
-			{/if}
-			<HighlightTextarea value={formatted} readonly />
-		{:catch error}
-			<div class="error">
-				{#if error instanceof AiScriptSyntaxError}
-					<p>{error.message}</p>
-				{:else if error instanceof Error}
-					<p>Format error.</p>
-					<pre>{error.stack || error.message}</pre>
 				{:else}
 					<p>Unknown error.</p>
 				{/if}
 			</div>
-		{/await}
+		{/if}
+		{#if formatted != null}
+			<HighlightTextarea value={formatted} readonly />
+		{/if}
 	</div>
 </div>
 

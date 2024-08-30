@@ -14,12 +14,6 @@ export default defineConfig({
 	},
 	build: {
 		rollupOptions: {
-			output: {
-				manualChunks: {
-					"prettier-standalone": ["prettier"],
-					aiscript: ["@syuilo/aiscript"],
-				},
-			},
 			treeshake: {
 				preset: "smallest",
 				moduleSideEffects(id) {

@@ -9,6 +9,7 @@
     "check": "svelte-check --tsconfig ./tsconfig.json"
   },
   "dependencies": {
+    "comlink": "^4.4.1",
     "lines-and-columns": "^2.0.4"
   },
   "devDependencies": {
