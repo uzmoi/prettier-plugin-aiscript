@@ -2,6 +2,7 @@
 	import { wrap } from "comlink";
 	import type { Options } from "prettier";
 	import HighlightTextarea from "./lib/HighlightTextarea.svelte";
+	import { asyncDebounce } from "./lib/async-debounce";
 	import type { exports } from "./worker";
 	import Worker from "./worker?worker";
 
@@ -13,14 +14,14 @@
 	let formatted: string | null = null;
 	let error: unknown;
 
-	const format = async (value: string, options: Options) => {
+	const format = asyncDebounce(async (value: string, options: Options) => {
 		try {
 			[formatted, error] = await worker.format(value, options);
 		} catch (e) {
 			formatted = null;
 			error = e;
 		}
-	};
+	}, 250);
 
 	$: format(value, options);
 </script>
