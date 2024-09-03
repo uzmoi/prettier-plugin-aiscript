@@ -102,6 +102,14 @@ export const correctLocation = <T extends { loc?: Ast.Loc }>(
 				return { ...node, loc };
 			}
 		}
+		if ("left" in node && "right" in node) {
+			const locL = correctLocation(node.left as T, comments).loc;
+			const locR = correctLocation(node.right as T, comments).loc;
+			if (locL && locR) {
+				const loc = { start: locL.start, end: locR.end };
+				return { ...node, loc };
+			}
+		}
 		return node;
 	}
 
