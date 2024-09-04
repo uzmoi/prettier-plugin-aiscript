@@ -137,7 +137,7 @@
 		left: 0;
 		text-align: right;
 		width: 3em;
-		padding-inline: 0.5em;
+		padding-inline: 0.25em;
 		border-right: 1px solid #888;
 		color: #ccc;
 		overflow-wrap: normal;
