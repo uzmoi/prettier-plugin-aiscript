@@ -1,0 +1,10 @@
+
+exists foo
+
+!not
+
+lhs && rhs
+
+lhs || rhs
+
+<: 'Hello AiScript!'

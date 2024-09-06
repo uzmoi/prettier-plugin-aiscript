@@ -1,5 +1,16 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`access > snapshot 1`] = `
+"object.prop
+
+array[index]
+
+target[
+  super_ultra_hyper_mega_miracle_ultimate_extremely_very_long_index_expression
+]
+"
+`;
+
 exports[`array > snapshot 1`] = `
 "[]
 
@@ -128,6 +139,13 @@ let f = @() {}
 "
 `;
 
+exports[`eval > snapshot 1`] = `
+"eval {
+  0
+}
+"
+`;
+
 exports[`function > snapshot 1`] = `
 "@f() {}
 
@@ -152,6 +170,21 @@ exports[`function > snapshot 1`] = `
 "
 `;
 
+exports[`if > snapshot 1`] = `
+"if (0) 1
+
+if (2) 3 elif (4) 5 else 6
+
+if (condition1) {
+  "hoge"
+} elif (condition2) {
+  "fuga"
+} else {
+  "piyo"
+}
+"
+`;
+
 exports[`literals > snapshot 1`] = `
 "null
 
@@ -170,6 +203,15 @@ false
 \`\\\`\`
 \`\\{\`
 // TODO: \`\\\\\`
+"
+`;
+
+exports[`match > snapshot 1`] = `
+"match (n) {
+  0 => "zero"
+  1 => "one"
+  * => "default"
+}
 "
 `;
 
@@ -204,6 +246,19 @@ exports[`object > snapshot 1`] = `
   piyo: // 4
   2,
 }
+"
+`;
+
+exports[`operator > snapshot 1`] = `
+"exists foo
+
+!not
+
+lhs && rhs
+
+lhs || rhs
+
+<: "Hello AiScript!"
 "
 `;
 

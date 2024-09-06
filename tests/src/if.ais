@@ -1,0 +1,12 @@
+
+if 0 1
+
+if 2 3 elif 4 5 else 6
+
+if condition1 {
+	"hoge"
+} elif condition2 {
+	"fuga"
+} else {
+	"piyo"
+}
