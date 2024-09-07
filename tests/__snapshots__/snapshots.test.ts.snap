@@ -353,3 +353,15 @@ exports[`toplevel > snapshot 1`] = `
 }
 "
 `;
+
+exports[`types > snapshot 1`] = `
+"var a: num = 0
+let b: num = 0
+@f(a: num) {}
+
+let xs: arr = []
+let ys: arr<str> = []
+
+let g: @(str) => bool = @() {}
+"
+`;
