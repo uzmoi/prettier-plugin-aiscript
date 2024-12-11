@@ -1,82 +1,100 @@
 import type { Ast } from "@syuilo/aiscript";
-import type { ParserOptions } from "prettier";
+import { has } from "emnorst";
 import type { Node } from "./node";
-import { startsWith } from "./utils";
 
-export type SugarOut = Ast.Call & {
+type OutSugar = Ast.Call & {
 	target: { type: "identifier"; name: "print" };
 	args: [Ast.Expression];
 };
 
-export const isSugarOut = (
-	node: Node,
-	options: ParserOptions,
-): node is SugarOut => {
+export const isOutSugar = (
+	node: Ast.Statement | Ast.Expression,
+	source: string,
+): node is OutSugar => {
 	if (node.type !== "call" || node.args.length !== 1) return false;
+
 	const { target } = node;
-	if (target.type !== "identifier" || target.name !== "print") return false;
-	return startsWith("<:", target, options);
+
+	if (
+		target.type !== "identifier" ||
+		target.name !== "print" ||
+		target.loc == null
+	) {
+		return false;
+	}
+
+	return source.startsWith("<:", target.loc.start);
 };
 
-export type SugarCall = Ast.Call & {
-	target: {
-		type: "identifier";
-		name:
-			| "Core:mul"
-			| "Core:pow"
-			| "Core:div"
-			| "Core:mod"
-			| "Core:add"
-			| "Core:sub"
-			| "Core:eq"
-			| "Core:neq"
-			| "Core:lt"
-			| "Core:gt"
-			| "Core:lteq"
-			| "Core:gteq";
-	};
+type BinaryOperatorSugar = Ast.Call & {
+	target: { type: "identifier"; name: keyof typeof BINARY_OPERATOR_SUGAR_MAP };
 	args: [Ast.Expression, Ast.Expression];
 };
 
-const SUGAR_FNS = new Set([
-	"Core:mul",
-	"Core:pow",
-	"Core:div",
-	"Core:mod",
-	"Core:add",
-	"Core:sub",
-	"Core:eq",
-	"Core:neq",
-	"Core:lt",
-	"Core:gt",
-	"Core:lteq",
-	"Core:gteq",
-]);
+export const BINARY_OPERATOR_SUGAR_MAP = {
+	"Core:eq": "==",
+	"Core:neq": "!=",
+	"Core:gt": ">",
+	"Core:gteq": ">=",
+	"Core:lt": "<",
+	"Core:lteq": "<=",
+	"Core:add": "+",
+	"Core:sub": "-",
+	"Core:mul": "*",
+	"Core:div": "/",
+	"Core:mod": "%",
+	"Core:pow": "^",
+} as const;
 
-export const isSugarCall = (node: Node): node is SugarCall => {
+export const isBinaryOperatorSugar = (
+	node: Node,
+): node is BinaryOperatorSugar => {
 	if (node.type !== "call" || node.args.length !== 2) return false;
+
 	const { target } = node;
-	if (target.type !== "identifier" || !SUGAR_FNS.has(target.name)) return false;
+
+	if (
+		target.type !== "identifier" ||
+		!has(BINARY_OPERATOR_SUGAR_MAP, target.name)
+	) {
+		return false;
+	}
+
 	if (target.loc == null) return true;
+
 	const { start, end } = target.loc;
 	return target.name.length !== end - start;
 };
 
-const isSugarLoopIf = (node: Node) =>
+const isSugarLoopIf = (node: Ast.Node): node is Ast.If & { cond: Ast.Not } =>
 	node.type === "if" && node.cond.type === "not" && node.then.type === "break";
 
-export const getSugarLoopType = (
-	node: Node,
-	options: ParserOptions,
-): "while" | "do-while" | undefined => {
-	if (node.type !== "loop" || node.statements.length !== 2) return;
+type SugarWhile = {
+	type: "while" | "do-while";
+	condition: Ast.Expression;
+	body: Ast.Statement | Ast.Expression;
+};
+
+export const getSugarWhile = (
+	node: Ast.Loop,
+	source: string,
+): SugarWhile | undefined => {
+	if (node.statements.length !== 2 || node.loc == null) return;
 	const [first, second] = node.statements;
 
-	if (isSugarLoopIf(first) && startsWith("while", node, options)) {
-		return "while";
+	if (isSugarLoopIf(first!) && source.startsWith("while", node.loc.start)) {
+		return {
+			type: "while",
+			condition: first.cond.expr,
+			body: second!,
+		};
 	}
 
-	if (isSugarLoopIf(second) && startsWith("do", node, options)) {
-		return "do-while";
+	if (isSugarLoopIf(second!) && source.startsWith("do", node.loc.start)) {
+		return {
+			type: "do-while",
+			condition: second.cond.expr,
+			body: first!,
+		};
 	}
 };
