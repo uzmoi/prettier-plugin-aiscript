@@ -1,165 +1,131 @@
-import type { Ast } from "@syuilo/aiscript";
 import { assert } from "emnorst";
 import { type Doc, type ParserOptions, doc } from "prettier";
-import type { Node } from "../node";
-import { getSugarLoopType } from "../sugar";
+import type * as dst from "../dst";
 import type { AstPath } from "../types";
-import { startsWith } from "../utils";
 import { printBlock } from "./block";
 import { printFunction } from "./function";
 
 const { group, line, indent, indentIfBreak, lineSuffixBoundary } = doc.builders;
 
 export const printStatement = (
-	path: AstPath<Ast.Statement>,
-	options: ParserOptions<Node>,
+	path: AstPath<dst.Statement>,
+	options: ParserOptions<dst.Node>,
 	print: (path: AstPath) => Doc,
 ): Doc => {
 	const { node } = path;
 
 	switch (node.type) {
-		case "def":
+		case "Assignment":
+			dev: assert.as<AstPath<typeof node>>(path);
+			return printAssign(path, options, print);
+		case "VariableDefinition":
 			dev: assert.as<AstPath<typeof node>>(path);
 			return printDefinition(path, options, print);
-		case "return":
+		case "FnDefinition":
 			dev: assert.as<AstPath<typeof node>>(path);
-			return ["return ", path.call(print, "expr")];
-		case "each":
+			return group(["@", node.name.name, printFunction(path, options, print)]);
+		case "Return":
+			dev: assert.as<AstPath<typeof node>>(path);
+			return ["return ", path.call(print, "body")];
+		case "Each":
 			dev: assert.as<AstPath<typeof node>>(path);
 			return group([
-				`each (let ${node.var}, `,
-				path.call(print, "items"),
+				`each (let ${node.definition.name.name}, `,
+				path.call(print, "source"),
 				") ",
-				path.call(print, "for"),
+				path.call(print, "body"),
 			]);
-		case "for":
+		case "For":
 			dev: assert.as<AstPath<typeof node>>(path);
 			return printFor(path, options, print);
-		case "loop":
+		case "Loop":
 			dev: assert.as<AstPath<typeof node>>(path);
-			return printLoop(path, options, print);
-		case "break":
-			return "break";
-		case "continue":
-			return "continue";
-		case "assign":
-		case "addAssign":
-		case "subAssign": {
+			return ["loop ", path.call(print, "body")];
+		case "While": {
 			dev: assert.as<AstPath<typeof node>>(path);
-			const op =
-				node.type === "addAssign" ? "+="
-				: node.type === "subAssign" ? "-="
-				: "=";
-			return printAssign(path, print, path.call(print, "dest"), op);
+			const whileCondition = ["while (", path.call(print, "condition"), ")"];
+			const body = path.call(print, "body");
+
+			return node.do ?
+					["do ", body, " ", whileCondition]
+				:	[whileCondition, " ", body];
 		}
+		case "Break":
+			return "break";
+		case "Continue":
+			return "continue";
+		case "Out":
+			dev: assert.as<AstPath<typeof node>>(path);
+			return ["<: ", path.call(print, "body")];
+		case "ExpressionStatement":
+			dev: assert.as<AstPath<typeof node>>(path);
+			return path.call(print, "expression");
+		case "Block":
+			dev: assert.as<AstPath<typeof node>>(path);
+			return printBlock(path, options, print);
 	}
-};
-
-const printDefinition = (
-	path: AstPath<Ast.Definition>,
-	options: ParserOptions<Node>,
-	print: (path: AstPath) => Doc,
-): Doc => {
-	const { node } = path;
-
-	// "@"で始まっていれば関数宣言
-	if (node.expr.type === "fn" && startsWith("@", node, options)) {
-		return group([
-			"@",
-			node.name,
-			path.call(
-				fn => printFunction(fn as AstPath<Ast.Fn>, options, print),
-				"expr",
-			),
-		]);
-	}
-
-	return printAssign(path, print, `${node.mut ? "var" : "let"} ${node.name}`);
-};
-
-const printFor = (
-	path: AstPath<Ast.For>,
-	options: ParserOptions<Node>,
-	print: (path: AstPath) => Doc,
-): Doc => {
-	const { node } = path;
-
-	let enumerator: Doc;
-
-	if (node.times) {
-		enumerator = path.call(print, "times");
-	} else if (node.var && node.to) {
-		// fromを省略した記法でもfromが補完されるので、originalTextのlocの位置を見る
-		const isFromOmitted =
-			node.from === undefined ||
-			(node.from.type === "num" &&
-				node.from.value === 0 &&
-				!startsWith("0", node.from, options));
-
-		enumerator = group([
-			`let ${node.var}`,
-			...(isFromOmitted ? [] : [" = ", path.call(print, "from")]),
-			", ",
-			path.call(print, "to"),
-		]);
-	} else {
-		throw new Error("Invalid 'for' node.");
-	}
-
-	return ["for (", enumerator, ") ", path.call(print, "for")];
-};
-
-const printLoop = (
-	path: AstPath<Ast.Loop>,
-	options: ParserOptions<Node>,
-	print: (path: AstPath) => Doc,
-): Doc => {
-	const { node } = path;
-	const type = getSugarLoopType(node, options);
-
-	if (type === "while") {
-		return [
-			"while (",
-			path.call(print, "statements", 0, "cond"),
-			") ",
-			path.call(print, "statements", 1),
-		];
-	}
-
-	if (type === "do-while") {
-		return [
-			"do ",
-			path.call(print, "statements", 0),
-			" while (",
-			path.call(print, "statements", 1, "cond"),
-			")",
-		];
-	}
-
-	return ["loop ", printBlock(path, options, print)];
 };
 
 const printAssign = (
-	path: AstPath<Ast.Definition | Ast.Assign | Ast.SubAssign | Ast.AddAssign>,
+	path: AstPath<dst.Assignment>,
+	_options: ParserOptions<dst.Node>,
 	print: (path: AstPath) => Doc,
-	lhs: Doc,
-	op = "=",
-	rhs: Doc = path.call(print, "expr"),
 ): Doc => {
 	const groupId = Symbol("assign");
 	const { node } = path;
 
-	let type: Doc = "";
-	if (node.type === "def" && node.varType != null) {
-		type = path.call(print, "varType");
-	}
-
 	return group([
-		lhs,
-		type ? [": ", type] : "",
-		` ${op}`,
+		path.call(print, "dest"),
+		" ",
+		node.operator,
 		group(indent(line), { id: groupId }),
 		lineSuffixBoundary,
-		indentIfBreak(rhs, { groupId }),
+		indentIfBreak(path.call(print, "value"), { groupId }),
 	]);
+};
+
+const printDefinition = (
+	path: AstPath<dst.VariableDefinition>,
+	_options: ParserOptions<dst.Node>,
+	print: (path: AstPath) => Doc,
+): Doc => {
+	const groupId = Symbol("assign");
+	const { node } = path;
+
+	return group([
+		node.mutable ? "var" : "let",
+		" ",
+		node.name.name,
+		node.ty == null ? "" : [": ", path.call(print, "ty")],
+		" =",
+		group(indent(line), { id: groupId }),
+		lineSuffixBoundary,
+		indentIfBreak(path.call(print, "init"), { groupId }),
+	]);
+};
+
+const printFor = (
+	path: AstPath<dst.For>,
+	_options: ParserOptions<dst.Node>,
+	print: (path: AstPath) => Doc,
+): Doc => {
+	return [
+		"for (",
+		path.call(path => {
+			if (path.node.type === "Range") {
+				const { definition, from } = path.node;
+
+				return group([
+					`let ${definition.name.name}`,
+					...(from == null ? [] : [" = ", path.call(print, "from")]),
+					", ",
+					path.call(print, "to"),
+				]);
+			}
+
+			return path.call(print, "times");
+		}, "enumerator"),
+		") ",
+		path.call(print, "body"),
+	];
 };

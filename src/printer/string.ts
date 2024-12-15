@@ -1,11 +1,10 @@
-import type { Ast } from "@syuilo/aiscript";
 import type { Doc, ParserOptions } from "prettier";
-import type { Node } from "../node";
+import type * as dst from "../dst";
 import type { AstPath } from "../types";
 
 export const printString = (
-	path: AstPath<Ast.Str>,
-	options: ParserOptions<Node>,
+	path: AstPath<dst.StringLiteral>,
+	options: ParserOptions<dst.Node>,
 ): Doc => {
 	const { value } = path.node;
 
@@ -23,18 +22,18 @@ export const printString = (
 };
 
 export const printTemplate = (
-	path: AstPath<Ast.Tmpl>,
-	_options: ParserOptions<Node>,
+	path: AstPath<dst.Template>,
+	_options: ParserOptions<dst.Node>,
 	print: (path: AstPath) => Doc,
 ): Doc => {
 	return [
 		"`",
 		path.map(
 			part =>
-				typeof part.node === "string" ?
-					part.node.replace(/[`{]/g, "\\$&")
-				:	["{", print(part as AstPath<Ast.Expression>), "}"],
-			"tmpl",
+				part.node.type === "TemplatePart" ?
+					part.node.content.replace(/[`{]/g, "\\$&")
+				:	["{", print(part as AstPath<dst.Expression>), "}"],
+			"parts",
 		),
 		"`",
 	];

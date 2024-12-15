@@ -1,59 +1,60 @@
-import { Ast } from "@syuilo/aiscript";
 import { assert } from "emnorst";
 import { type Doc, type ParserOptions, doc } from "prettier";
-import type { Node } from "../node";
+import type * as dst from "../dst";
 import type { AstPath } from "../types";
-import { printBlock, printStatementSequence } from "./block";
+import { printStatementSequence } from "./block";
 import { printDanglingComments } from "./comment";
-import { printExpression } from "./expression";
+import { printExpressionWithParens } from "./expression";
 import { printStatement } from "./statement";
 import { printTypeSource } from "./type-source";
 
-const { hardline } = doc.builders;
+const { line, hardline, indent, group } = doc.builders;
 
 export const printAiScript = (
 	path: AstPath,
-	options: ParserOptions<Node>,
+	options: ParserOptions<dst.Node>,
 	print: (path: AstPath) => Doc,
 ): Doc => {
 	const { node } = path;
 
 	switch (node.type) {
-		case "root":
+		case "Script":
 			dev: assert.as<AstPath<typeof node>>(path);
 			return [
-				path.call(path => printStatementSequence(path, options, print), "body"),
+				printStatementSequence(path, options, print),
 				printDanglingComments(path, options),
 				hardline,
 			];
-		case "ns":
+		case "Namespace":
 			dev: assert.as<AstPath<typeof node>>(path);
-			return [`:: ${node.name} `, printBlock(path, options, print, "members")];
-		case "meta":
+			if (node.body.length === 0) {
+				return `:: ${node.name.name} {}`;
+			}
+			return group([
+				`:: ${node.name.name} {`,
+				indent([line, printStatementSequence(path, options, print)]),
+				line,
+				"}",
+			]);
+		case "Meta":
 			dev: assert.as<AstPath<typeof node>>(path);
 			return [
 				"### ",
-				node.name ? [node.name, " "] : "",
+				node.name ? [node.name.name, " "] : "",
 				path.call(print, "value"),
 			];
-		case "namedTypeSource":
-		case "fnTypeSource":
+		case "TypeReference":
+		case "FnType":
 			dev: assert.as<AstPath<typeof node>>(path);
 			return printTypeSource(path, options, print);
 		default:
-			if (Ast.isStatement(node)) {
-				return printStatement(path as AstPath<typeof node>, options, print);
-			}
-			if (
-				node.type === "not" ||
-				node.type === "and" ||
-				node.type === "or" ||
-				Ast.isExpression(node)
-			) {
-				return printExpression(path as AstPath<typeof node>, options, print);
-			}
-			throw new TypeError(
-				`Unknown node type: '${(node as { type: string }).type}'.`,
+			return (
+				printStatement(path as AstPath<dst.Statement>, options, print) ??
+				printExpressionWithParens(
+					path as AstPath<dst.Expression>,
+					options,
+					print,
+				)
 			);
 	}
 };

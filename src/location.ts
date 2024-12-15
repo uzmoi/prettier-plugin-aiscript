@@ -1,18 +1,9 @@
-import type { Node } from "./node";
-import { isSugarCall } from "./sugar";
+import type * as dst from "./dst";
 
-export const locStart = (node: Node): number => {
-	if (isSugarCall(node)) {
-		return locStart(node.args[0]);
-	}
-
-	if ("target" in node) {
-		return locStart(node.target);
-	}
-
-	return node.loc?.start ?? 0;
+export const locStart = (node: dst.NodeBase): number => {
+	return node.loc.start;
 };
 
-export const locEnd = (node: Node): number => {
-	return node.loc?.end ?? 0;
+export const locEnd = (node: dst.NodeBase): number => {
+	return node.loc.end;
 };

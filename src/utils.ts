@@ -1,16 +1,10 @@
 import type { ParserOptions } from "prettier";
-import type { Node } from "./node";
+import type * as dst from "./dst";
 
-export const getNodeSourceCode = (node: Node, options: ParserOptions<Node>) => {
+export const getNodeSourceCode = (
+	node: dst.Node,
+	options: ParserOptions<dst.Node>,
+) => {
 	const { originalText, locStart, locEnd } = options;
 	return originalText.slice(locStart(node), locEnd(node));
-};
-
-export const startsWith = (
-	string: string,
-	node: Node,
-	options: ParserOptions<Node>,
-) => {
-	const { originalText, locStart } = options;
-	return originalText.startsWith(string, locStart(node));
 };

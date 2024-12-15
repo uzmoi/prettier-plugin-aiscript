@@ -1,29 +1,27 @@
-import type { Ast } from "@syuilo/aiscript";
 import { util, type Doc, type ParserOptions, doc } from "prettier";
-import type { Node } from "../node";
+import type * as dst from "../dst";
 import type { AstPath } from "../types";
 import { hasComments, printDanglingComments } from "./comment";
 
 const { group, indent, line, hardline } = doc.builders;
 
 export const printBlock = (
-	path: AstPath<Ast.Namespace | Ast.Block | Ast.Fn | Ast.Loop>,
-	options: ParserOptions<Node>,
+	path: AstPath<dst.Block>,
+	options: ParserOptions<dst.Node>,
 	print: (path: AstPath) => Doc,
-	key: "statements" | "children" | "members" = "statements",
 ): Doc => {
 	const { node } = path;
 
-	const values = (node as { [_ in typeof key]?: Node[] })[key] ?? [];
-
-	if (values.length === 0 && !hasComments(node)) {
+	if (node.body.length === 0 && !hasComments(node)) {
 		return "{}";
 	}
 
 	const shouldBreak = util.hasNewlineInRange(
 		options.originalText,
 		options.locStart(node),
-		values.length ? options.locStart(values[0]) : options.locEnd(node),
+		node.body.length > 0 ?
+			options.locStart(node.body[0]!)
+		:	options.locEnd(node),
 	);
 
 	return group(
@@ -32,7 +30,7 @@ export const printBlock = (
 			indent([
 				line,
 				printDanglingComments(path, options),
-				path.call(path => printStatementSequence(path, options, print), key),
+				printStatementSequence(path, options, print),
 			]),
 			line,
 			"}",
@@ -42,8 +40,8 @@ export const printBlock = (
 };
 
 export const printStatementSequence = (
-	path: AstPath<Node[]>,
-	options: ParserOptions<Node>,
+	path: AstPath<{ body: dst.Node[] }>,
+	options: ParserOptions<dst.Node>,
 	print: (path: AstPath) => Doc,
 ): Doc => {
 	const { node } = path;
@@ -52,7 +50,7 @@ export const printStatementSequence = (
 	path.each((path, index) => {
 		result.push(print(path));
 
-		const isLast = index === node.length - 1;
+		const isLast = index === node.body.length - 1;
 		if (isLast) return;
 		result.push(hardline);
 
@@ -60,7 +58,7 @@ export const printStatementSequence = (
 		if (util.isNextLineEmpty(originalText, locEnd(path.node))) {
 			result.push(hardline);
 		}
-	});
+	}, "body");
 
 	return result;
 };

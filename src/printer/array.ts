@@ -1,23 +1,22 @@
-import type { Ast } from "@syuilo/aiscript";
 import { util, type Doc, type ParserOptions, doc } from "prettier";
-import type { Node } from "../node";
+import type * as dst from "../dst";
 import type { AstPath } from "../types";
 import { hasComments, printDanglingComments } from "./comment";
 
 const { group, softline, line, indent, ifBreak, join } = doc.builders;
 
 export const printArray = (
-	path: AstPath<Ast.Arr>,
-	options: ParserOptions<Node>,
+	path: AstPath<dst.ArrayLiteral>,
+	options: ParserOptions<dst.Node>,
 	print: (path: AstPath) => Doc,
 ): Doc => {
 	const { node } = path;
 
-	if (node.value.length === 0 && !hasComments(node)) {
+	if (node.elements.length === 0 && !hasComments(node)) {
 		return "[]";
 	}
 
-	const [first] = node.value;
+	const first = node.elements[0];
 	const shouldBreak = util.hasNewlineInRange(
 		options.originalText,
 		options.locStart(node),
@@ -29,7 +28,7 @@ export const printArray = (
 			"[",
 			indent([
 				softline,
-				join([",", line], path.map(print, "value")),
+				join([",", line], path.map(print, "elements")),
 				ifBreak(","),
 			]),
 			printDanglingComments(path, options),

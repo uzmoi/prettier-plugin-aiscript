@@ -1,14 +1,12 @@
-import type { Ast } from "@syuilo/aiscript";
 import { type Doc, type ParserOptions, doc } from "prettier";
-import type { Node } from "../node";
+import type * as dst from "../dst";
 import type { AstPath } from "../types";
-import { printBlock } from "./block";
 
 const { group, line, softline, indent, join } = doc.builders;
 
 export const printFunction = (
-	path: AstPath<Ast.Fn>,
-	options: ParserOptions<Node>,
+	path: AstPath<dst.Fn | dst.FnDefinition>,
+	_options: ParserOptions<dst.Node>,
 	print: (path: AstPath) => Doc,
 ): Doc => {
 	return [
@@ -18,18 +16,18 @@ export const printFunction = (
 				softline,
 				join(
 					[",", line],
-					path.map(arg => {
-						const { node } = arg;
-						if (node.argType == null) return node.name;
-						return [node.name, ": ", arg.call(print, "argType")];
-					}, "args"),
+					path.map(param => {
+						const { node } = param;
+						if (node.ty == null) return node.name.name;
+						return [node.name.name, ": ", param.call(print, "ty")];
+					}, "params"),
 				),
 			]),
 			softline,
 		]),
 		")",
-		path.node.retType == null ? "" : [": ", path.call(print, "retType")],
+		path.node.returnTy == null ? "" : [": ", path.call(print, "returnTy")],
 		" ",
-		printBlock(path, options, print, "children"),
+		path.call(print, "body"),
 	];
 };

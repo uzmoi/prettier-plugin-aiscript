@@ -1,6 +1,6 @@
 import type { Ast } from "@syuilo/aiscript";
 import type prettier from "prettier";
-import type { Node, Root } from "./node";
+import type { Node, Script } from "./dst";
 
 export interface AstPath<T = Node>
 	extends Omit<
@@ -8,7 +8,7 @@ export interface AstPath<T = Node>
 		"node" | "stack" | "call" | "map" | "each"
 	> {
 	node: [T] extends [Ast.Node] ? T & Node : T;
-	root: Root;
+	root: Script;
 
 	stack: (string | number | Node | Node[])[];
 
