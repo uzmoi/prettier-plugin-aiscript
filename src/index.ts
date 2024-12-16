@@ -3,6 +3,7 @@ import type * as dst from "./dst";
 import { locEnd, locStart } from "./location";
 import { parse } from "./parser";
 import { printAiScript } from "./printer";
+import { printComment } from "./printer/comment";
 import type { AstPath } from "./types";
 import { upRoot } from "./upper";
 
@@ -36,13 +37,13 @@ const printer: prettier.Printer<dst.Node> = {
 		);
 	},
 	canAttachComment(node) {
-		return "type" in node && (node.type as string) !== "Comment";
+		return "type" in node && node.type !== "Comment";
 	},
-	printComment({ node }, _options) {
-		return node.type === "Comment" ? node.value : "";
+	printComment(path, options) {
+		return printComment(path as AstPath, options);
 	},
 	isBlockComment(node) {
-		return (node as unknown as dst.Comment).value.startsWith("/*");
+		return (node as dst.Comment).value.startsWith("/*");
 	},
 	getCommentChildNodes(node, _options) {
 		switch (node.type) {
