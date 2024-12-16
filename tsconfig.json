@@ -10,6 +10,7 @@
 		"skipLibCheck": true,
 		"allowUnusedLabels": true,
 		"strict": true,
+		"noUncheckedIndexedAccess": true,
 		"noEmit": true
 	}
 }
