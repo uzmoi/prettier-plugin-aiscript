@@ -17,8 +17,8 @@ export const printString = (
 		:	!includesSingleQuote && includesDoubleQuote;
 
 	return isSingleQuote ?
-			`'${value.replace(/'/g, "\\'")}'`
-		:	`"${value.replace(/"/g, '\\"')}"`;
+			`'${value.replace(/['\\]/g, "\\$&")}'`
+		:	`"${value.replace(/["\\]/g, "\\$&")}"`;
 };
 
 export const printTemplate = (
@@ -31,7 +31,7 @@ export const printTemplate = (
 		path.map(
 			part =>
 				part.node.type === "TemplatePart" ?
-					part.node.content.replace(/[`{]/g, "\\$&")
+					part.node.content.replace(/[`{\\]/g, "\\$&")
 				:	["{", print(part as AstPath<dst.Expression>), "}"],
 			"parts",
 		),
