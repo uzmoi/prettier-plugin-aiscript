@@ -32,7 +32,8 @@
   },
   "homepage": "https://github.com/uzmoi/prettier-plugin-aiscript#readme",
   "dependencies": {
-    "@syuilo/aiscript": "^0.18.0 || ^0.19.0",
+    "@syuilo/aiscript": "^1.2.1",
+    "lines-and-columns": "^2.0.4",
     "semver": "^7.6.3"
   },
   "peerDependencies": {

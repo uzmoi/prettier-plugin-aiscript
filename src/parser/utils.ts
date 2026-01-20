@@ -1,4 +1,4 @@
-import type { Cst } from "@syuilo/aiscript";
+import type { Ast } from "@syuilo/aiscript";
 
 export const visitNode = <T extends {}>(node: T, f: (node: T) => T) => {
 	if (Array.isArray(node)) {
@@ -12,7 +12,6 @@ export const visitNode = <T extends {}>(node: T, f: (node: T) => T) => {
 		}
 	} else {
 		if ("type" in node) {
-			// biome-ignore lint/style/noParameterAssign: ゆるして
 			node = f(node);
 		}
 
@@ -28,5 +27,5 @@ export const visitNode = <T extends {}>(node: T, f: (node: T) => T) => {
 };
 
 export const parserPlugin =
-	(f: (node: Cst.Node) => Cst.Node) => (nodes: Cst.Node[]) =>
+	(f: (node: Ast.Node) => Ast.Node) => (nodes: Ast.Node[]) =>
 		nodes.map(node => visitNode(node, f));
