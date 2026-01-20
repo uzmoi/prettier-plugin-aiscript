@@ -1,0 +1,7 @@
+packages:
+  - website
+
+minimumReleaseAge: 10080 # 1 week
+
+publicHoistPattern:
+  - "@typescript/*"
