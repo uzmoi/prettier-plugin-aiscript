@@ -12,7 +12,8 @@
 			"complexity": { "noExcessiveCognitiveComplexity": "off" },
 			"suspicious": {
 				"noConfusingLabels": "off",
-				"noAssignInExpressions": "off"
+				"noAssignInExpressions": "off",
+				"noThenProperty": "off"
 			},
 			"correctness": {
 				"noEmptyCharacterClassInRegex": "off",

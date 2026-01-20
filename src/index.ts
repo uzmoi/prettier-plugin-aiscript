@@ -2,15 +2,15 @@ import type prettier from "prettier";
 import type * as dst from "./dst";
 import { locEnd, locStart } from "./location";
 import { parse } from "./parser";
+import { liftRoot } from "./parser/lift/toplevel";
 import { printAiScript } from "./printer";
 import { printComment } from "./printer/comment";
 import type { AstPath } from "./types";
-import { upRoot } from "./upper";
 
 const parser: prettier.Parser<dst.Node> = {
 	parse(text, _options) {
 		const root = parse(text);
-		return upRoot(root, text);
+		return liftRoot(root, text);
 	},
 	astFormat: "aiscript",
 	locStart,
