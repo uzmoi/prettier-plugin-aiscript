@@ -1,13 +1,17 @@
 import type { Ast } from "@syuilo/aiscript";
 import type * as dst from "../../dst";
-import { loc } from "./helpers";
+import type { LiftContext } from "./context";
+import { DUMMY_LOC, liftLoc } from "./helpers";
 
 export const liftType = <T extends Ast.TypeSource | undefined>(
 	node: T,
+	ctx: LiftContext,
 ): dst.Ty | (undefined extends T ? null : never) => {
 	if (node == null) {
 		return null as undefined extends T ? null : never;
 	}
+
+	const loc = liftLoc(node.loc, ctx);
 
 	switch (node.type) {
 		case "namedTypeSource": {
@@ -16,19 +20,25 @@ export const liftType = <T extends Ast.TypeSource | undefined>(
 				name: {
 					type: "Identifier",
 					name: node.name,
-					// TODO: loc
-					loc: loc(undefined),
+					loc: DUMMY_LOC,
 				},
-				argument: liftType(node.inner),
-				loc: loc(node.loc),
+				argument: liftType(node.inner, ctx),
+				loc,
 			};
 		}
 		case "fnTypeSource": {
 			return {
 				type: "FnType",
-				params: node.params.map(liftType),
-				return: liftType(node.result),
-				loc: loc(node.loc),
+				params: node.params.map(param => liftType(param, ctx)),
+				return: liftType(node.result, ctx),
+				loc,
+			};
+		}
+		case "unionTypeSource": {
+			return {
+				type: "UnionType",
+				union: node.inners.map(inner => liftType(inner, ctx)),
+				loc,
 			};
 		}
 	}

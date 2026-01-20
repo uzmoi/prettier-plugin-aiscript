@@ -1,6 +1,8 @@
 import type { Ast } from "@syuilo/aiscript";
 import { has } from "emnorst";
 import type { Node } from "./node";
+import type { LiftContext } from "./parser/lift/context";
+import { liftLoc } from "./parser/lift/helpers";
 
 type OutSugar = Ast.Call & {
 	target: { type: "identifier"; name: "print" };
@@ -9,7 +11,7 @@ type OutSugar = Ast.Call & {
 
 export const isOutSugar = (
 	node: Ast.Statement | Ast.Expression,
-	source: string,
+	ctx: LiftContext,
 ): node is OutSugar => {
 	if (node.type !== "call" || node.args.length !== 1) return false;
 
@@ -23,7 +25,7 @@ export const isOutSugar = (
 		return false;
 	}
 
-	return source.startsWith("<:", target.loc.start);
+	return ctx.source.startsWith("<:", liftLoc(target.loc, ctx).start);
 };
 
 type BinaryOperatorSugar = Ast.Call & {
@@ -77,12 +79,13 @@ type SugarWhile = {
 
 export const getSugarWhile = (
 	node: Ast.Loop,
-	source: string,
+	ctx: LiftContext,
 ): SugarWhile | undefined => {
 	if (node.statements.length !== 2 || node.loc == null) return;
+	const loc = liftLoc(node.loc, ctx);
 	const [first, second] = node.statements;
 
-	if (isSugarLoopIf(first!) && source.startsWith("while", node.loc.start)) {
+	if (isSugarLoopIf(first!) && ctx.source.startsWith("while", loc.start)) {
 		return {
 			type: "while",
 			condition: first.cond.expr,
@@ -90,7 +93,7 @@ export const getSugarWhile = (
 		};
 	}
 
-	if (isSugarLoopIf(second!) && source.startsWith("do", node.loc.start)) {
+	if (isSugarLoopIf(second!) && ctx.source.startsWith("do", loc.start)) {
 		return {
 			type: "do-while",
 			condition: second.cond.expr,

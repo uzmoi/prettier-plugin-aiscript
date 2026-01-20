@@ -1,29 +1,30 @@
 import type { Ast } from "@syuilo/aiscript";
 import type * as dst from "../../dst";
-import { BINARY_OPERATOR_SUGAR_MAP, isBinaryOperatorSugar } from "../../sugar";
-import { block, identifier, loc } from "./helpers";
+import type { LiftContext } from "./context";
+import { block, DUMMY_LOC, identifier, liftLoc } from "./helpers";
 import { liftStatement } from "./statement";
 import { liftType } from "./type";
 
 export const liftExpression = (
 	node: Ast.Expression,
-	source: string,
+	ctx: LiftContext,
 ): dst.Expression => {
+	const loc = liftLoc(node.loc, ctx);
+
 	switch (node.type) {
 		case "if": {
 			return {
 				type: "If",
-				condition: liftExpression(node.cond, source),
-				then: liftStatement(node.then, source),
+				condition: liftExpression(node.cond, ctx),
+				then: liftStatement(node.then, ctx),
 				elseif: node.elseif.map(node => ({
 					type: "ElseIf",
-					condition: liftExpression(node.cond, source),
-					then: liftStatement(node.then, source),
-					// TODO: loc
-					loc: loc(undefined),
+					condition: liftExpression(node.cond, ctx),
+					then: liftStatement(node.then, ctx),
+					loc: DUMMY_LOC,
 				})),
-				else: node.else == null ? null : liftStatement(node.else, source),
-				loc: loc(node.loc),
+				else: node.else == null ? null : liftStatement(node.else, ctx),
+				loc,
 			};
 		}
 		case "fn": {
@@ -31,32 +32,30 @@ export const liftExpression = (
 				type: "Fn",
 				params: node.params.map(param => ({
 					type: "FnParameter",
-					// TODO: loc
-					name: identifier(param.name, loc(undefined)),
-					ty: liftType(param.argType),
-					optional: false,
-					default: null,
-					// TODO: loc
-					loc: loc(undefined),
+					dest: liftExpression(param.dest, ctx),
+					ty: liftType(param.argType, ctx),
+					optional: param.optional,
+					default:
+						param.default == null ? null : liftExpression(param.default, ctx),
+					loc: DUMMY_LOC,
 				})),
-				returnTy: liftType(node.retType),
+				returnTy: liftType(node.retType, ctx),
 				// FIXME: loc.start
-				body: block(node.children, loc(node.loc), source),
-				loc: loc(node.loc),
+				body: block(node.children, liftLoc(node.loc, ctx), ctx),
+				loc,
 			};
 		}
 		case "match": {
 			return {
 				type: "Match",
-				value: liftExpression(node.about, source),
+				value: liftExpression(node.about, ctx),
 				cases: node.qs
 					.map(
 						({ q, a }): dst.MatchCase => ({
 							type: "MatchCase",
-							pattern: liftExpression(q, source),
-							body: liftStatement(a, source),
-							// TODO: loc
-							loc: loc(undefined),
+							pattern: liftExpression(q, ctx),
+							body: liftStatement(a, ctx),
+							loc: DUMMY_LOC,
 						}),
 					)
 					.concat(
@@ -64,45 +63,56 @@ export const liftExpression = (
 							{
 								type: "MatchCase",
 								pattern: null,
-								body: liftStatement(node.default, source),
-								// TODO: loc
-								loc: loc(undefined),
+								body: liftStatement(node.default, ctx),
+								loc: DUMMY_LOC,
 							}
 						:	[],
 					),
-				loc: loc(node.loc),
+				loc,
 			};
 		}
 		case "block": {
 			return {
 				type: "EvalBlock",
 				// FIXME: loc.start += "eval".length
-				body: block(node.statements, loc(node.loc), source),
-				loc: loc(node.loc),
+				body: block(node.statements, liftLoc(node.loc, ctx), ctx),
+				loc,
 			};
 		}
 		case "exists": {
 			return {
 				type: "UnaryOperator",
 				operator: "exists",
-				body: liftExpression(node.identifier, source),
-				loc: loc(node.loc),
+				body: liftExpression(node.identifier, ctx),
+				loc,
 			};
 		}
 		case "identifier": {
-			return identifier(node.name, loc(node.loc));
+			return identifier(node.name, liftLoc(node.loc, ctx));
 		}
 		case "null": {
-			return { type: "NullLiteral", loc: loc(node.loc) };
+			return { type: "NullLiteral", loc: liftLoc(node.loc, ctx) };
 		}
 		case "bool": {
-			return { type: "BoolLiteral", value: node.value, loc: loc(node.loc) };
+			return {
+				type: "BoolLiteral",
+				value: node.value,
+				loc,
+			};
 		}
 		case "num": {
-			return { type: "NumberLiteral", value: node.value, loc: loc(node.loc) };
+			return {
+				type: "NumberLiteral",
+				value: node.value,
+				loc,
+			};
 		}
 		case "str": {
-			return { type: "StringLiteral", value: node.value, loc: loc(node.loc) };
+			return {
+				type: "StringLiteral",
+				value: node.value,
+				loc,
+			};
 		}
 		case "tmpl": {
 			return {
@@ -112,27 +122,29 @@ export const liftExpression = (
 						return {
 							type: "TemplatePart",
 							content: element,
-							// TODO: loc
-							loc: loc(undefined),
+							loc: DUMMY_LOC,
 						};
 					}
 
-					const part = liftExpression(element, source);
+					const part = liftExpression(element, ctx);
 
-					if (part.type === "StringLiteral" && source[part.loc.end] !== "}") {
+					if (
+						part.type === "StringLiteral" &&
+						ctx.source[part.loc.end] !== "}"
+					) {
 						return { type: "TemplatePart", content: part.value, loc: part.loc };
 					}
 
 					return part;
 				}),
-				loc: loc(node.loc),
+				loc,
 			};
 		}
 		case "arr": {
 			return {
 				type: "ArrayLiteral",
-				elements: node.value.map(element => liftExpression(element, source)),
-				loc: loc(node.loc),
+				elements: node.value.map(element => liftExpression(element, ctx)),
+				loc,
 			};
 		}
 		case "obj": {
@@ -140,85 +152,104 @@ export const liftExpression = (
 				type: "ObjectLiteral",
 				properties: Array.from(node.value, ([key, value]) => ({
 					type: "ObjectProperty",
-					// TODO: loc
-					key: identifier(key, loc(undefined)),
-					value: liftExpression(value, source),
-					// TODO: loc
-					loc: loc(undefined),
+					key: identifier(key, DUMMY_LOC),
+					value: liftExpression(value, ctx),
+					loc: DUMMY_LOC,
 				})),
-				loc: loc(node.loc),
+				loc,
 			};
 		}
+		case "plus":
+		case "minus":
 		case "not": {
 			return {
 				type: "UnaryOperator",
-				operator: "!",
-				body: liftExpression(node.expr, source),
-				loc: loc(node.loc),
+				operator: UNARY_OPERATOR_MAP[node.type],
+				body: liftExpression(node.expr, ctx),
+				loc,
 			};
 		}
+		case "pow":
+		case "mul":
+		case "div":
+		case "rem":
+		case "add":
+		case "sub":
+		case "lt":
+		case "lteq":
+		case "gt":
+		case "gteq":
+		case "eq":
+		case "neq":
 		case "and":
 		case "or": {
-			const lhs = liftExpression(node.left, source);
-			const rhs = liftExpression(node.right, source);
+			const lhs = liftExpression(node.left, ctx);
+			const rhs = liftExpression(node.right, ctx);
 			return {
 				type: "BinaryOperator",
-				operator: ({ and: "&&", or: "||" } as const)[node.type],
+				operator: BINARY_OPERATOR_MAP[node.type],
 				lhs,
 				rhs,
-				// FIXME: issue #4, loc.start
-				loc: loc(node.loc && { start: lhs.loc.start, end: node.loc.end }),
+				// FIXME: issue #4
+				loc: { start: lhs.loc.start, end: rhs.loc.end },
 			};
 		}
 		case "call": {
-			if (isBinaryOperatorSugar(node)) {
-				const lhs = liftExpression(node.args[0], source);
-				const rhs = liftExpression(node.args[1], source);
-				return {
-					type: "BinaryOperator",
-					operator: BINARY_OPERATOR_SUGAR_MAP[node.target.name],
-					lhs,
-					rhs,
-					// FIXME: issue #4, loc.start
-					loc: loc(node.loc && { start: lhs.loc.start, end: node.loc.end }),
-				};
-			}
-
-			const callee = liftExpression(node.target, source);
-
+			const callee = liftExpression(node.target, ctx);
 			return {
 				type: "Call",
 				callee,
-				args: node.args.map(arg => liftExpression(arg, source)),
+				args: node.args.map(arg => liftExpression(arg, ctx)),
 				// FIXME: issue #4, loc.start
-				loc: loc(node.loc && { start: callee.loc.start, end: node.loc.end }),
+				loc: { start: callee.loc.start, end: loc.end },
 			};
 		}
 		case "index": {
-			const target = liftExpression(node.target, source);
+			const target = liftExpression(node.target, ctx);
 			return {
 				type: "Index",
 				target,
-				index: liftExpression(node.index, source),
+				index: liftExpression(node.index, ctx),
 				// FIXME: issue #4, loc.start
-				loc: loc(node.loc && { start: target.loc.start, end: node.loc.end }),
+				loc: { start: target.loc.start, end: loc.end },
 			};
 		}
 		case "prop": {
-			const target = liftExpression(node.target, source);
+			const target = liftExpression(node.target, ctx);
 			return {
 				type: "Prop",
 				target,
-				// TODO: loc
-				name: identifier(node.name, loc(undefined)),
+				name: identifier(node.name, DUMMY_LOC),
 				// FIXME: issue #4, loc.start
-				loc: loc(node.loc && { start: target.loc.start, end: node.loc.end }),
+				loc: { start: target.loc.start, end: loc.end },
 			};
 		}
 		default: {
-			throw new Error(
-				`Unknown node type: ${(node satisfies never as { type: string }).type}`,
-			);
+			node satisfies never;
+			throw new Error(`Unknown node type: ${(node as { type: string }).type}`);
 		}
 	}
 };
+
+const UNARY_OPERATOR_MAP = {
+	not: "!",
+	plus: "+",
+	minus: "-",
+} as const;
+
+const BINARY_OPERATOR_MAP = {
+	and: "&&",
+	or: "||",
+	eq: "==",
+	neq: "!=",
+	gt: ">",
+	gteq: ">=",
+	lt: "<",
+	lteq: "<=",
+	add: "+",
+	sub: "-",
+	mul: "*",
+	div: "/",
+	rem: "%",
+	pow: "^",
+} as const;

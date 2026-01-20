@@ -27,7 +27,7 @@ interface FnBase extends NodeBase {
 
 export interface FnParameter extends NodeBase {
 	type: "FnParameter";
-	name: Identifier;
+	dest: Expression;
 	ty: Ty | null;
 	optional: boolean;
 	default: Expression | null;
@@ -81,7 +81,7 @@ export interface Assignment extends NodeBase {
 export interface VariableDefinition extends NodeBase {
 	type: "VariableDefinition";
 	mutable: boolean;
-	name: Identifier;
+	dest: Expression;
 	ty: Ty | null;
 	init: Expression;
 }
@@ -293,7 +293,7 @@ export interface EvalBlock extends NodeBase {
 	body: Block;
 }
 
-export type Ty = TypeReference | FnType;
+export type Ty = TypeReference | FnType | UnionType;
 
 export interface TypeReference extends NodeBase {
 	type: "TypeReference";
@@ -305,4 +305,9 @@ export interface FnType extends NodeBase {
 	type: "FnType";
 	params: Ty[];
 	return: Ty;
+}
+
+export interface UnionType extends NodeBase {
+	type: "UnionType";
+	union: Ty[];
 }

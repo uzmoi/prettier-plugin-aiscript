@@ -1,65 +1,71 @@
 import type { Ast } from "@syuilo/aiscript";
 import type * as dst from "../../dst";
 import { getSugarWhile, isOutSugar } from "../../sugar";
+import type { LiftContext } from "./context";
 import { liftExpression } from "./expression";
-import { block, identifier, loc } from "./helpers";
+import { block, DUMMY_LOC, identifier, liftLoc } from "./helpers";
 import { liftType } from "./type";
 
 export const liftStatement = (
 	node: Ast.Statement | Ast.Expression,
-	source: string,
+	ctx: LiftContext,
 ): dst.Statement => {
-	if (isOutSugar(node, source)) {
+	const loc = liftLoc(node.loc, ctx);
+
+	if (isOutSugar(node, ctx)) {
 		return {
 			type: "Out",
-			body: liftExpression(node.args[0], source),
-			loc: loc(node.loc),
+			body: liftExpression(node.args[0], ctx),
+			loc,
 		};
 	}
 
-	if (node.type === "block" && !source.startsWith("eval", node.loc?.start)) {
-		return block(node.statements, loc(node.loc), source);
+	if (node.type === "block" && !ctx.source.startsWith("eval", loc.start)) {
+		return block(node.statements, loc, ctx);
 	}
 
 	switch (node.type) {
 		case "def": {
 			// "@"で始まっていれば関数宣言
-			if (node.expr.type === "fn" && source.startsWith("@", node.loc?.start)) {
+			if (
+				!node.mut &&
+				node.expr.type === "fn" &&
+				node.dest.type === "identifier" &&
+				ctx.source.startsWith("@", loc.start)
+			) {
 				return {
 					type: "FnDefinition",
-					// TODO: loc
-					name: identifier(node.name, loc(undefined)),
-					params: node.expr.args.map(param => ({
+					name: identifier(node.dest.name, liftLoc(node.dest.loc, ctx)),
+					params: node.expr.params.map(param => ({
 						type: "FnParameter",
-						// TODO: loc
-						name: identifier(param.name, loc(undefined)),
-						ty: liftType(param.argType),
-						optional: false,
-						default: null,
-						// TODO: loc
-						loc: loc(undefined),
+						dest: liftExpression(param.dest, ctx),
+						ty: liftType(param.argType, ctx),
+						optional: param.optional,
+						default:
+							param.default == null ? null : liftExpression(param.default, ctx),
+						loc: DUMMY_LOC,
 					})),
-					returnTy: liftType(node.varType),
+					returnTy: liftType(node.varType, ctx),
 					// FIXME: loc.start
-					body: block(node.expr.children, loc(node.loc), source),
-					loc: loc(node.loc),
+					body: block(node.expr.children, liftLoc(node.loc, ctx), ctx),
+					loc,
 				};
 			}
+
 			return {
 				type: "VariableDefinition",
 				mutable: node.mut,
-				// TODO: loc
-				name: identifier(node.name, loc(undefined)),
-				ty: liftType(node.varType),
-				init: liftExpression(node.expr, source),
-				loc: loc(node.loc),
+				dest: liftExpression(node.dest, ctx),
+				ty: liftType(node.varType, ctx),
+				init: liftExpression(node.expr, ctx),
+				loc,
 			};
 		}
 		case "return": {
 			return {
 				type: "Return",
-				body: liftExpression(node.expr, source),
-				loc: loc(node.loc),
+				body: liftExpression(node.expr, ctx),
+				loc,
 			};
 		}
 		case "each": {
@@ -68,17 +74,15 @@ export const liftStatement = (
 				definition: {
 					type: "VariableDefinition",
 					mutable: false,
-					// TODO: loc
-					name: identifier(node.var, loc(undefined)),
+					dest: liftExpression(node.var, ctx),
 					ty: null,
 					// init は使われないのでダミーの NullLiteral
-					init: { type: "NullLiteral", loc: loc(undefined) },
-					// TODO: loc
-					loc: loc(undefined),
+					init: { type: "NullLiteral", loc: DUMMY_LOC },
+					loc: DUMMY_LOC,
 				},
-				source: liftExpression(node.items, source),
-				body: liftStatement(node.for, source),
-				loc: loc(node.loc),
+				source: liftExpression(node.items, ctx),
+				body: liftStatement(node.for, ctx),
+				loc,
 			};
 		}
 		case "for": {
@@ -87,7 +91,7 @@ export const liftStatement = (
 			if (node.times != null) {
 				enumerator = {
 					type: "Times",
-					times: liftExpression(node.times, source),
+					times: liftExpression(node.times, ctx),
 				};
 			} else if (node.var != null && node.to != null) {
 				// fromを省略した記法でもfromが補完されるので、sourceのlocの位置を見る
@@ -95,22 +99,20 @@ export const liftStatement = (
 					node.from === undefined ||
 					(node.from.type === "num" &&
 						node.from.value === 0 &&
-						!source.startsWith("0", node.from.loc?.start));
+						!ctx.source.startsWith("0", liftLoc(node.from.loc, ctx).start));
 				enumerator = {
 					type: "Range",
 					definition: {
 						type: "VariableDefinition",
 						mutable: false,
-						// TODO: loc
-						name: identifier(node.var, loc(undefined)),
+						dest: identifier(node.var, DUMMY_LOC),
 						ty: null,
 						// init は使われないのでダミーの NullLiteral
-						init: { type: "NullLiteral", loc: loc(undefined) },
-						// TODO: loc
-						loc: loc(undefined),
+						init: { type: "NullLiteral", loc: DUMMY_LOC },
+						loc: DUMMY_LOC,
 					},
-					from: isFromOmitted ? null : liftExpression(node.from!, source),
-					to: liftExpression(node.to!, source),
+					from: isFromOmitted ? null : liftExpression(node.from!, ctx),
+					to: liftExpression(node.to!, ctx),
 				};
 			} else {
 				throw new Error("Invalid 'for' node.");
@@ -119,19 +121,19 @@ export const liftStatement = (
 			return {
 				type: "For",
 				enumerator,
-				body: liftStatement(node.for, source),
-				loc: loc(node.loc),
+				body: liftStatement(node.for, ctx),
+				loc,
 			};
 		}
 		case "loop": {
-			const sugar = getSugarWhile(node, source);
+			const sugar = getSugarWhile(node, ctx);
 			if (sugar) {
 				return {
 					type: "While",
 					do: sugar.type === "do-while",
-					condition: liftExpression(sugar.condition, source),
-					body: liftStatement(sugar.body, source),
-					loc: loc(node.loc),
+					condition: liftExpression(sugar.condition, ctx),
+					body: liftStatement(sugar.body, ctx),
+					loc,
 				};
 			}
 			return {
@@ -139,17 +141,17 @@ export const liftStatement = (
 				body: block(
 					node.statements,
 					// FIXME: loc.start += "loop".length
-					loc(node.loc),
-					source,
+					liftLoc(node.loc, ctx),
+					ctx,
 				),
-				loc: loc(node.loc),
+				loc,
 			};
 		}
 		case "break": {
-			return { type: "Break", loc: loc(node.loc) };
+			return { type: "Break", loc };
 		}
 		case "continue": {
-			return { type: "Continue", loc: loc(node.loc) };
+			return { type: "Continue", loc };
 		}
 		case "assign":
 		case "addAssign":
@@ -162,13 +164,13 @@ export const liftStatement = (
 			return {
 				type: "Assignment",
 				operator: operators[node.type],
-				dest: liftExpression(node.dest, source),
-				value: liftExpression(node.expr, source),
-				loc: loc(node.loc),
+				dest: liftExpression(node.dest, ctx),
+				value: liftExpression(node.expr, ctx),
+				loc,
 			};
 		}
 		default: {
-			const expression = liftExpression(node, source);
+			const expression = liftExpression(node, ctx);
 			return {
 				type: "ExpressionStatement",
 				expression,
