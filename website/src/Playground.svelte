@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { wrap } from "comlink";
 	import type { Options } from "prettier";
-	import HighlightTextarea from "./lib/HighlightTextarea.svelte";
 	import { asyncDebounce } from "./lib/async-debounce";
-	import type { exports } from "./worker";
+	import HighlightTextarea from "./lib/HighlightTextarea.svelte";
+	import type { exports, FormatError } from "./worker";
 	import Worker from "./worker?worker";
 
 	export let value = "";
@@ -11,16 +11,11 @@
 
 	const worker = wrap<typeof exports>(new Worker());
 
-	let formatted: string | null = null;
-	let error: unknown;
+	let formatted: string | undefined;
+	let error: FormatError | undefined;
 
 	const format = asyncDebounce(async (value: string, options: Options) => {
-		try {
-			[formatted, error] = await worker.format(value, options);
-		} catch (e) {
-			formatted = null;
-			error = e;
-		}
+		[formatted, error] = await worker.format(value, options);
 	}, 250);
 
 	$: format(value, options);
@@ -28,20 +23,19 @@
 
 <div class="playground" style:tab-size={options.tabWidth ?? 2}>
 	<div class="panel">
-		<HighlightTextarea bind:value />
+		<HighlightTextarea
+			bind:value
+			errorPos={error?.name === "Syntax" ? error.pos : null}
+		/>
 	</div>
 	<div class="panel">
 		{#if error != null}
 			<div class="error">
-				{#if error instanceof Error}
-					{#if error.name === "Syntax"}
-						<p>{error.message}</p>
-					{:else}
-						<p>Format error.</p>
-						<pre>{error.stack || error.message}</pre>
-					{/if}
-				{:else}
-					<p>Unknown error.</p>
+				{#if error.name === "Syntax"}
+					<p>[Syntax Error] {error.message}</p>
+				{:else if error.name === "Format"}
+					<p>[Format Error]</p>
+					<pre>{error.message}</pre>
 				{/if}
 			</div>
 		{/if}

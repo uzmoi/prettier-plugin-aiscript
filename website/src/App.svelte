@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { AISCRIPT_VERSION } from "@syuilo/aiscript/constants.js";
 	import type { Options } from "prettier";
-	import Playground from "./Playground.svelte";
 	import initialCode from "./assets/playground-initial-code.ais?raw";
+	import Playground from "./Playground.svelte";
 
 	const links: [string, string][] = [
 		["NPM", "https://www.npmjs.com/package/@uzmoi/prettier-plugin-aiscript"],

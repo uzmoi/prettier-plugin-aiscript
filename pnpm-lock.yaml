@@ -63,10 +63,16 @@ importers:
       lines-and-columns:
         specifier: ^2.0.4
         version: 2.0.4
+      prettier:
+        specifier: ^3.7.4
+        version: 3.7.4
     devDependencies:
       '@sveltejs/vite-plugin-svelte':
         specifier: ^6.2.4
         version: 6.2.4(svelte@5.46.3)(vite@7.3.1(yaml@2.8.2))
+      '@syuilo/aiscript':
+        specifier: ^1.2.1
+        version: 1.2.1
       '@tsconfig/svelte':
         specifier: ^5.0.4
         version: 5.0.6

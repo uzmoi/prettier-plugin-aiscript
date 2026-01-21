@@ -1,21 +1,33 @@
+<script lang="ts" module>
+	declare module "svelte/elements" {
+		interface HTMLTextareaAttributes {
+			autocorrect?: string;
+		}
+	}
+</script>
+
 <script lang="ts">
 	import { LinesAndColumns } from "lines-and-columns";
 	import { type Token, tokenize } from "./tokenizer";
 
 	export let value = "";
 	export let readonly = false;
+	export let errorPos: { line: number; column: number } | null = null;
 
-	let lines: Token[][];
+	let lines: (Token & { column: number })[][];
 	$: {
 		lines = [];
 		const tokens = tokenize(value);
-		let line: Token[] = [];
+		let column = 0;
+		let line: (Token & { column: number })[] = [];
 		for (const { type, value } of tokens) {
 			const [firstValue, ...tokenLines] = value.split("\n");
-			line.push({ type, value: firstValue });
+			line.push({ type, value: firstValue, column });
+			column += firstValue.length;
 			for (const value of tokenLines) {
 				lines.push(line);
-				line = [{ type, value }];
+				line = [{ type, value, column: 0 }];
+				column = value.length;
 			}
 		}
 		lines.push(line);
@@ -53,14 +65,25 @@
 		autocapitalize="off"
 		autocorrect="off"
 		spellcheck="false"
-	/>
+	></textarea>
 	<div class="highlight code" aria-hidden="true">
 		{#each lines as tokens, index}
+			{@const line = index + 1}
 			<div>
-				<div class="line-number">{index + 1}</div>
+				<div class="line-number" data-error={errorPos?.line === line}>
+					{line}
+				</div>
 				<div class="line-content">
 					{#each tokens as token}
-						<span data-token={token.type}>{token.value}</span>
+						<span
+							data-token={token.type}
+							data-column={token.column}
+							data-error={errorPos?.line === line &&
+								token.column < errorPos.column &&
+								errorPos.column <= token.column + token.value.length}
+						>
+							{token.value}
+						</span>
 					{/each}
 				</div>
 			</div>
@@ -143,9 +166,17 @@
 		overflow-wrap: normal;
 	}
 
+	.line-number[data-error="true"] {
+		background-color: #a22;
+	}
+
 	.line-content {
 		display: inline-block;
 		white-space: pre-wrap;
+	}
+
+	.line-content [data-error="true"] {
+		text-decoration: underline wavy red;
 	}
 
 	::selection {

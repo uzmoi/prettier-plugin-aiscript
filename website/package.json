@@ -10,10 +10,12 @@
   },
   "dependencies": {
     "comlink": "^4.4.1",
-    "lines-and-columns": "^2.0.4"
+    "lines-and-columns": "^2.0.4",
+    "prettier": "^3.7.4"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^6.2.4",
+    "@syuilo/aiscript": "^1.2.1",
     "@tsconfig/svelte": "^5.0.4",
     "svelte": "^5.46.3",
     "svelte-check": "^4.3.5",
