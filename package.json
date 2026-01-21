@@ -10,7 +10,7 @@
   ],
   "scripts": {
     "dev": "npm run dev -w website",
-    "build": "tsup",
+    "build": "tsdown",
     "check": "tsc",
     "lint": "biome check",
     "test": "vitest",
@@ -49,7 +49,7 @@
     "emnorst": "^1.0.0-next.2",
     "lefthook": "^2.0.15",
     "prettier": "^3.3.3",
-    "tsup": "^8.2.3",
+    "tsdown": "^0.20.0-beta.3",
     "typescript": "5.9.3",
     "vitest": "^4.0.17"
   },

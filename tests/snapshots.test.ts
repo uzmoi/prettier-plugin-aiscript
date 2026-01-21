@@ -1,3 +1,5 @@
+/// <reference types="tsdown/client" />
+
 import { Parser } from "@syuilo/aiscript";
 import { describe, test } from "vitest";
 import { emptyNsPlugin } from "../src/parser";

@@ -5,6 +5,7 @@
 	"words": [
 		"aiscript",
 		"biomejs",
+		"codegen",
 		"comlink",
 		"elif",
 		"emnorst",
@@ -21,8 +22,7 @@
 		"tmpl",
 		"treeshake",
 		"tsbuildinfo",
-		"tsup",
-		"Typecheck",
+		"typecheck",
 		"uzmoi"
 	]
 }
