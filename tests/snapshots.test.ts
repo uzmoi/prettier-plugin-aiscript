@@ -2,7 +2,6 @@
 
 import { Parser } from "@syuilo/aiscript";
 import { describe, test } from "vitest";
-import { emptyNsPlugin } from "../src/parser";
 import { format, parserPlugin } from "./utils";
 
 const cases = import.meta.glob<string>("./src/*.ais", {
@@ -12,9 +11,6 @@ const cases = import.meta.glob<string>("./src/*.ais", {
 });
 
 const parser = new Parser();
-
-// @ts-expect-error
-parser.plugins.validate.unshift(emptyNsPlugin());
 
 parser.addPlugin(
 	"transform",
