@@ -118,21 +118,18 @@ export const liftExpression = (
 			return {
 				type: "Template",
 				parts: node.tmpl.map(element => {
-					if (typeof element === "string") {
-						return {
-							type: "TemplatePart",
-							content: element,
-							loc: DUMMY_LOC,
-						};
-					}
-
 					const part = liftExpression(element, ctx);
 
-					if (
-						part.type === "StringLiteral" &&
-						ctx.source[part.loc.end] !== "}"
-					) {
-						return { type: "TemplatePart", content: part.value, loc: part.loc };
+					if (part.type === "StringLiteral") {
+						// パーサーにバグがなければ startChar は " ' ` } の何れかのはず。
+						const startChar = ctx.source[part.loc.start];
+						if (startChar === "`" || startChar === "}") {
+							return {
+								type: "TemplatePart",
+								content: part.value,
+								loc: part.loc,
+							};
+						}
 					}
 
 					return part;
