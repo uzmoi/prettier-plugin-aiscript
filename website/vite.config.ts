@@ -9,17 +9,4 @@ export default defineConfig({
 			prettier: "prettier/standalone",
 		},
 	},
-	esbuild: {
-		keepNames: true,
-	},
-	build: {
-		rollupOptions: {
-			treeshake: {
-				preset: "smallest",
-				moduleSideEffects(id) {
-					return id.endsWith("/website/src/main.ts");
-				},
-			},
-		},
-	},
 });
