@@ -1,8 +1,6 @@
 import type { Ast } from "@syuilo/aiscript";
-import { has } from "emnorst";
-import type { Node } from "./node";
-import type { LiftContext } from "./parser/lift/context";
-import { liftLoc } from "./parser/lift/helpers";
+import type { LiftContext } from "./context";
+import { liftLoc } from "./helpers";
 
 type OutSugar = Ast.Call & {
 	target: { type: "identifier"; name: "print" };
@@ -28,45 +26,21 @@ export const isOutSugar = (
 	return ctx.source.startsWith("<:", liftLoc(target.loc, ctx).start);
 };
 
-type BinaryOperatorSugar = Ast.Call & {
-	target: { type: "identifier"; name: keyof typeof BINARY_OPERATOR_SUGAR_MAP };
-	args: [Ast.Expression, Ast.Expression];
+type SugarFnDef = Ast.Definition & {
+	dest: Ast.Identifier;
+	expr: Ast.Fn;
 };
 
-export const BINARY_OPERATOR_SUGAR_MAP = {
-	"Core:eq": "==",
-	"Core:neq": "!=",
-	"Core:gt": ">",
-	"Core:gteq": ">=",
-	"Core:lt": "<",
-	"Core:lteq": "<=",
-	"Core:add": "+",
-	"Core:sub": "-",
-	"Core:mul": "*",
-	"Core:div": "/",
-	"Core:mod": "%",
-	"Core:pow": "^",
-} as const;
-
-export const isBinaryOperatorSugar = (
-	node: Node,
-): node is BinaryOperatorSugar => {
-	if (node.type !== "call" || node.args.length !== 2) return false;
-
-	const { target } = node;
-
-	if (
-		target.type !== "identifier" ||
-		!has(BINARY_OPERATOR_SUGAR_MAP, target.name)
-	) {
-		return false;
-	}
-
-	if (target.loc == null) return true;
-
-	const { start, end } = target.loc;
-	return target.name.length !== end - start;
-};
+export const isSugarFnDefinition = (
+	node: Ast.Definition,
+	ctx: LiftContext,
+	start: number,
+): node is SugarFnDef =>
+	!node.mut &&
+	node.expr.type === "fn" &&
+	node.dest.type === "identifier" &&
+	// "@"で始まっていれば関数宣言
+	ctx.source.startsWith("@", start);
 
 const isSugarLoopIf = (node: Ast.Node): node is Ast.If & { cond: Ast.Not } =>
 	node.type === "if" && node.cond.type === "not" && node.then.type === "break";

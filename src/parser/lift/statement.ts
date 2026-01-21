@@ -1,9 +1,9 @@
 import type { Ast } from "@syuilo/aiscript";
 import type * as dst from "../../dst";
-import { getSugarWhile, isOutSugar } from "../../sugar";
 import type { LiftContext } from "./context";
 import { liftExpression } from "./expression";
 import { block, DUMMY_LOC, identifier, liftLoc } from "./helpers";
+import { getSugarWhile, isOutSugar, isSugarFnDefinition } from "./sugar";
 import { liftType } from "./type";
 
 export const liftStatement = (
@@ -26,13 +26,7 @@ export const liftStatement = (
 
 	switch (node.type) {
 		case "def": {
-			// "@"で始まっていれば関数宣言
-			if (
-				!node.mut &&
-				node.expr.type === "fn" &&
-				node.dest.type === "identifier" &&
-				ctx.source.startsWith("@", loc.start)
-			) {
+			if (isSugarFnDefinition(node, ctx, loc.start)) {
 				return {
 					type: "FnDefinition",
 					name: identifier(node.dest.name, liftLoc(node.dest.loc, ctx)),
