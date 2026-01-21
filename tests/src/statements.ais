@@ -1,15 +1,17 @@
+@f() {
+	return result
+}
 
-return result
 
-break
+loop {
+	break
 
-continue
+	continue
+}
 
-loop { 0 }
+while (condition) {}
 
-// TODO: while (condition) {}
-
-// TODO: do {} while (condition)
+do {} while (condition)
 
 for (10) {}
 

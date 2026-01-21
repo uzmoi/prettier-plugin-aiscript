@@ -1,5 +1,5 @@
 import { assert } from "emnorst";
-import { type Doc, type ParserOptions, doc } from "prettier";
+import { type Doc, doc, type ParserOptions } from "prettier";
 import type * as dst from "../dst";
 import type { AstPath } from "../types";
 
@@ -13,12 +13,13 @@ export const printTypeSource = (
 	const { node } = path;
 
 	switch (node.type) {
-		case "TypeReference":
+		case "TypeReference": {
 			assert.as<AstPath<typeof node>>(path);
 			return node.argument == null ?
 					node.name.name
 				:	[node.name.name, "<", path.call(print, "argument"), ">"];
-		case "FnType":
+		}
+		case "FnType": {
 			assert.as<AstPath<typeof node>>(path);
 			return [
 				"@(",
@@ -26,5 +27,9 @@ export const printTypeSource = (
 				") => ",
 				path.call(print, "return"),
 			];
+		}
+		case "UnionType": {
+			return [join(" | ", path.map(print, "union"))];
+		}
 	}
 };

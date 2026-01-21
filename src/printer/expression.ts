@@ -1,5 +1,5 @@
 import { assert } from "emnorst";
-import { type Doc, type ParserOptions, doc } from "prettier";
+import { type Doc, doc, type ParserOptions } from "prettier";
 import type * as dst from "../dst";
 import { needsParens } from "../needs-parens";
 import type { AstPath } from "../types";
@@ -79,8 +79,7 @@ export const printExpression = (
 			return group([
 				path.call(print, "target"),
 				"[",
-				indent([softline, path.call(print, "index")]),
-				softline,
+				path.call(print, "index"),
 				"]",
 			]);
 		case "Prop":
@@ -136,14 +135,16 @@ const printMatch = (
 			hardline,
 			join(
 				hardline,
-				path.map(
-					q => [
-						q.node.pattern == null ? "*" : q.call(print, "pattern"),
+				path.map(q => {
+					return [
+						q.node.pattern == null ?
+							"default"
+						:	["case ", q.call(print, "pattern")],
 						" => ",
 						q.call(print, "body"),
-					],
-					"cases",
-				),
+						",",
+					];
+				}, "cases"),
 			),
 		]),
 		hardline,

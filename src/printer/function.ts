@@ -1,4 +1,4 @@
-import { type Doc, type ParserOptions, doc } from "prettier";
+import { type Doc, doc, type ParserOptions } from "prettier";
 import type * as dst from "../dst";
 import type { AstPath } from "../types";
 
@@ -17,9 +17,10 @@ export const printFunction = (
 				join(
 					[",", line],
 					path.map(param => {
-						const { node } = param;
-						if (node.ty == null) return node.name.name;
-						return [node.name.name, ": ", param.call(print, "ty")];
+						return [
+							param.call(print, "dest"),
+							param.node.ty == null ? "" : [": ", param.call(print, "ty")],
+						];
 					}, "params"),
 				),
 			]),

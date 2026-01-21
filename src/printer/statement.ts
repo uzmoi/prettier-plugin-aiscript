@@ -1,5 +1,5 @@
 import { assert } from "emnorst";
-import { type Doc, type ParserOptions, doc } from "prettier";
+import { type Doc, doc, type ParserOptions } from "prettier";
 import type * as dst from "../dst";
 import type { AstPath } from "../types";
 import { printBlock } from "./block";
@@ -30,7 +30,9 @@ export const printStatement = (
 		case "Each":
 			dev: assert.as<AstPath<typeof node>>(path);
 			return group([
-				`each (let ${node.definition.name.name}, `,
+				"each (let ",
+				path.call(print, "definition", "dest"),
+				", ",
 				path.call(print, "source"),
 				") ",
 				path.call(print, "body"),
@@ -95,7 +97,7 @@ const printDefinition = (
 	return group([
 		node.mutable ? "var" : "let",
 		" ",
-		node.name.name,
+		path.call(print, "dest"),
 		node.ty == null ? "" : [": ", path.call(print, "ty")],
 		" =",
 		group(indent(line), { id: groupId }),
@@ -113,10 +115,11 @@ const printFor = (
 		"for (",
 		path.call(path => {
 			if (path.node.type === "Range") {
-				const { definition, from } = path.node;
+				const { from } = path.node;
 
 				return group([
-					`let ${definition.name.name}`,
+					"let ",
+					path.call(print, "definition", "dest"),
 					...(from == null ? [] : [" = ", path.call(print, "from")]),
 					", ",
 					path.call(print, "to"),

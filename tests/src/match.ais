@@ -1,2 +1,2 @@
 
-match n { 0 => 'zero' 1 => 'one' * => 'default' }
+match n { case 0 => 'zero', case 1 => 'one', default => 'default' }

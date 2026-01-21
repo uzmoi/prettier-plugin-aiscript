@@ -5,9 +5,7 @@ exports[`access > snapshot 1`] = `
 
 array[index]
 
-target[
-  super_ultra_hyper_mega_miracle_ultimate_extremely_very_long_index_expression
-]
+target[super_ultra_hyper_mega_miracle_ultimate_extremely_very_long_index_expression]
 "
 `;
 
@@ -213,9 +211,9 @@ false
 
 exports[`match > snapshot 1`] = `
 "match (n) {
-  0 => "zero"
-  1 => "one"
-  * => "default"
+  case 0 => "zero",
+  case 1 => "one",
+  default => "default",
 }
 "
 `;
@@ -321,17 +319,19 @@ target[index]
 `;
 
 exports[`statements > snapshot 1`] = `
-"return result
+"@f() {
+  return result
+}
 
-break
+loop {
+  break
 
-continue
+  continue
+}
 
-loop { 0 }
+while (condition) {}
 
-// TODO: while (condition) {}
-
-// TODO: do {} while (condition)
+do {} while (condition)
 
 for (10) {}
 
