@@ -1,6 +1,7 @@
 import { type Ast, Parser } from "@syuilo/aiscript";
 import type { Script } from "../dst";
 import { parseCommentsByStringLocations } from "./comments";
+import { LiftContext } from "./lift/context";
 import { liftScript } from "./lift/toplevel";
 import { parserPlugin } from "./utils";
 
@@ -24,5 +25,11 @@ export const parse = (source: string): Script => {
 
 	const comments = parseCommentsByStringLocations(source, stringLocations);
 
-	return liftScript(body, comments, source);
+	const ctx = new LiftContext(source);
+
+	for (const { loc } of comments) {
+		ctx.commentReadBackMap.set(loc.end, loc.start);
+	}
+
+	return liftScript(body, comments, ctx);
 };

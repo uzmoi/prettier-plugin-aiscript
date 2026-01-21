@@ -1,6 +1,6 @@
 import type { Ast } from "@syuilo/aiscript";
 import type * as dst from "../../dst";
-import { LiftContext } from "./context";
+import type { LiftContext } from "./context";
 import { liftExpression } from "./expression";
 import { identifier, identifierLocOf, liftLoc } from "./helpers";
 import { liftStatement } from "./statement";
@@ -8,15 +8,13 @@ import { liftStatement } from "./statement";
 export const liftScript = (
 	body: readonly Ast.Node[],
 	comments: dst.Comment[],
-	source: string,
+	ctx: LiftContext,
 ): dst.Script => {
-	const ctx = new LiftContext(source);
-
 	return {
 		type: "Script",
 		body: body.map(body => liftTopLevel(body, ctx)),
 		comments,
-		loc: { start: 0, end: source.length },
+		loc: { start: 0, end: ctx.source.length },
 	};
 };
 
