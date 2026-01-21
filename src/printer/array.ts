@@ -1,4 +1,4 @@
-import { util, type Doc, type ParserOptions, doc } from "prettier";
+import { type Doc, doc, type ParserOptions, util } from "prettier";
 import type * as dst from "../dst";
 import type { AstPath } from "../types";
 import { hasComments, printDanglingComments } from "./comment";

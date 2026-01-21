@@ -1,5 +1,5 @@
 import { assert } from "emnorst";
-import { type Doc, type ParserOptions, doc } from "prettier";
+import { type Doc, doc, type ParserOptions } from "prettier";
 import type * as dst from "../dst";
 import type { AstPath } from "../types";
 import { printStatementSequence } from "./block";
