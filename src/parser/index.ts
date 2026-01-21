@@ -1,9 +1,10 @@
 import { type Ast, Parser } from "@syuilo/aiscript";
-import type { Root } from "../node";
+import type { Script } from "../dst";
 import { parseCommentsByStringLocations } from "./comments";
+import { liftScript } from "./lift/toplevel";
 import { parserPlugin } from "./utils";
 
-export const parse = (source: string): Root => {
+export const parse = (source: string): Script => {
 	const parser = new Parser();
 
 	const stringLocations: Ast.Loc[] = [];
@@ -23,5 +24,5 @@ export const parse = (source: string): Root => {
 
 	const comments = parseCommentsByStringLocations(source, stringLocations);
 
-	return { type: "root", body, comments };
+	return liftScript(body, comments, source);
 };

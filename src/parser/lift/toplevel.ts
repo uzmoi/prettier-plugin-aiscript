@@ -1,18 +1,21 @@
 import type { Ast } from "@syuilo/aiscript";
 import type * as dst from "../../dst";
-import type { Root } from "../../node";
 import { LiftContext } from "./context";
 import { liftExpression } from "./expression";
 import { identifier, identifierLocOf, liftLoc } from "./helpers";
 import { liftStatement } from "./statement";
 
-export const liftRoot = (root: Root, source: string): dst.Script => {
+export const liftScript = (
+	body: readonly Ast.Node[],
+	comments: dst.Comment[],
+	source: string,
+): dst.Script => {
 	const ctx = new LiftContext(source);
 
 	return {
 		type: "Script",
-		body: root.body.map(body => liftTopLevel(body, ctx)),
-		comments: root.comments,
+		body: body.map(body => liftTopLevel(body, ctx)),
+		comments,
 		loc: { start: 0, end: source.length },
 	};
 };
