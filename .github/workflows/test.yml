@@ -9,18 +9,15 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        aiscript-version: [0.18.0, 0.19.0]
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
-          cache: npm
+          cache: pnpm
 
-      - run: npm ci
-      - run: npm i @syuilo/aiscript@^${{ matrix.aiscript-version }}
-      - run: npm test -- --coverage
+      - run: pnpm install
+      - run: pnpm test --coverage
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4
