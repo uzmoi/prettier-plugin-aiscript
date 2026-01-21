@@ -1,6 +1,6 @@
 import type { Ast } from "@syuilo/aiscript";
 import { LinesAndColumns } from "lines-and-columns";
-import type { Comment } from "../node";
+import type { Comment } from "../dst";
 
 export const parseCommentsByStringLocations = (
 	source: string,
@@ -36,12 +36,9 @@ export const parseCommentsByStringLocations = (
 	return Array.from(
 		commentMatches,
 		({ 0: match, index }): Comment => ({
-			type: "comment",
+			type: "Comment",
 			value: match,
-			loc: {
-				start: lines.locationForIndex(index)!,
-				end: lines.locationForIndex(index + match.length)!,
-			},
+			loc: { start: index, end: index + match.length },
 		}),
 	);
 };

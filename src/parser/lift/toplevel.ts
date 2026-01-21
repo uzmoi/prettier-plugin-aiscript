@@ -12,11 +12,7 @@ export const liftRoot = (root: Root, source: string): dst.Script => {
 	return {
 		type: "Script",
 		body: root.body.map(body => liftTopLevel(body, ctx)),
-		comments: root.comments.map(comment => ({
-			type: "Comment",
-			value: comment.value,
-			loc: liftLoc(comment.loc, ctx),
-		})),
+		comments: root.comments,
 		loc: { start: 0, end: source.length },
 	};
 };
