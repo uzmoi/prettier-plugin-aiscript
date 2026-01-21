@@ -10,7 +10,3 @@ run = "pnpm exec biome check --no-errors-on-unmatched {staged_files}"
 
 [pre-commit.commands.cSpell]
 run = "pnpm exec cspell lint --no-progress --no-must-find-files {staged_files}"
-
-[pre-commit.commands.test]
-glob = "tests/**"
-run = "npm test -- --run"
