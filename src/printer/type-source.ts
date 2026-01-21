@@ -14,13 +14,13 @@ export const printTypeSource = (
 
 	switch (node.type) {
 		case "TypeReference": {
-			assert.as<AstPath<typeof node>>(path);
+			dev: assert.as<AstPath<typeof node>>(path);
 			return node.argument == null ?
 					node.name.name
 				:	[node.name.name, "<", path.call(print, "argument"), ">"];
 		}
 		case "FnType": {
-			assert.as<AstPath<typeof node>>(path);
+			dev: assert.as<AstPath<typeof node>>(path);
 			return [
 				"@(",
 				join([",", line], path.map(print, "params")),
@@ -29,6 +29,7 @@ export const printTypeSource = (
 			];
 		}
 		case "UnionType": {
+			dev: assert.as<AstPath<typeof node>>(path);
 			return [join(" | ", path.map(print, "union"))];
 		}
 	}

@@ -2,11 +2,10 @@ import type { Ast } from "@syuilo/aiscript";
 import type prettier from "prettier";
 import type { Node, Script } from "./dst";
 
-export interface AstPath<T = Node>
-	extends Omit<
-		prettier.AstPath<Node>,
-		"node" | "stack" | "call" | "map" | "each"
-	> {
+export interface AstPath<T = Node> extends Omit<
+	prettier.AstPath<Node>,
+	"node" | "stack" | "call" | "map" | "each"
+> {
 	node: [T] extends [Ast.Node] ? T & Node : T;
 	root: Script;
 
@@ -52,7 +51,7 @@ type Get<T, K extends KeyOfType<T>> =
 type GetIndex<T> = Extract<T, readonly unknown[]>[number];
 
 type KeyOfType<T, U = unknown> =
-	T extends readonly unknown[] ? Extract<keyof T, number>
+	[T] extends [readonly unknown[]] ? Extract<keyof T, number>
 	:	{
 			[P in keyof T]-?: NonNullable<T[P]> extends U ? P : never;
 		}[keyof T];

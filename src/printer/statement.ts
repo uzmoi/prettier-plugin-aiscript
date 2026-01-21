@@ -115,6 +115,7 @@ const printFor = (
 		"for (",
 		path.call(path => {
 			if (path.node.type === "Range") {
+				dev: assert.as<AstPath<typeof path.node>>(path);
 				const { from } = path.node;
 
 				return group([
@@ -126,6 +127,7 @@ const printFor = (
 				]);
 			}
 
+			dev: assert.as<AstPath<typeof path.node>>(path);
 			return path.call(print, "times");
 		}, "enumerator"),
 		") ",
