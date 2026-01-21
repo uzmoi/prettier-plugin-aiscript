@@ -88,31 +88,19 @@ export const liftExpression = (
 			};
 		}
 		case "identifier": {
-			return identifier(node.name, liftLoc(node.loc, ctx));
+			return identifier(node.name, loc);
 		}
 		case "null": {
-			return { type: "NullLiteral", loc: liftLoc(node.loc, ctx) };
+			return { type: "NullLiteral", loc };
 		}
 		case "bool": {
-			return {
-				type: "BoolLiteral",
-				value: node.value,
-				loc,
-			};
+			return { type: "BoolLiteral", value: node.value, loc };
 		}
 		case "num": {
-			return {
-				type: "NumberLiteral",
-				value: node.value,
-				loc,
-			};
+			return { type: "NumberLiteral", value: node.value, loc };
 		}
 		case "str": {
-			return {
-				type: "StringLiteral",
-				value: node.value,
-				loc,
-			};
+			return { type: "StringLiteral", value: node.value, loc };
 		}
 		case "tmpl": {
 			return {
