@@ -9,7 +9,7 @@
     "CHANGELOG.md"
   ],
   "scripts": {
-    "dev": "npm run dev -w website",
+    "dev": "pnpm -F website dev",
     "build": "tsdown",
     "check": "tsc",
     "lint": "biome check",
