@@ -42,7 +42,9 @@ export const exports = {
 				:	{
 						name: "Format",
 						message:
-							error instanceof Error ? error.stack || error.message : null,
+							error instanceof Error ?
+								`${error.message}\n\n${error.stack}`
+							:	null,
 					},
 			];
 		}
