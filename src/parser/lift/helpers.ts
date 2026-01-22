@@ -22,7 +22,7 @@ const readBackWhiteSpace = (source: string, index: number) => {
 	return index;
 };
 
-const readBackComments = (ctx: LiftContext, index: number) => {
+export const readBackComments = (ctx: LiftContext, index: number) => {
 	index = readBackWhiteSpace(ctx.source, index);
 
 	while (ctx.commentReadBackMap.has(index)) {

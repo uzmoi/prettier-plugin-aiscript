@@ -1,7 +1,13 @@
 import type { Ast } from "@syuilo/aiscript";
 import type * as dst from "../../dst";
 import type { LiftContext } from "./context";
-import { block, DUMMY_LOC, identifier, liftLoc } from "./helpers";
+import {
+	block,
+	DUMMY_LOC,
+	identifier,
+	liftLoc,
+	readBackComments,
+} from "./helpers";
 import { liftStatement } from "./statement";
 import { liftType } from "./type";
 
@@ -135,12 +141,18 @@ export const liftExpression = (
 		case "obj": {
 			return {
 				type: "ObjectLiteral",
-				properties: Array.from(node.value, ([key, value]) => ({
-					type: "ObjectProperty",
-					key: identifier(key, DUMMY_LOC),
-					value: liftExpression(value, ctx),
-					loc: DUMMY_LOC,
-				})),
+				properties: Array.from(node.value, ([key, valueAst]) => {
+					const value = liftExpression(valueAst, ctx);
+					const colon = readBackComments(ctx, value.loc.start) - 1;
+					const keyEnd = readBackComments(ctx, colon);
+					const start = keyEnd - key.length;
+					return {
+						type: "ObjectProperty",
+						key: identifier(key, { start, end: keyEnd }),
+						value,
+						loc: { start, end: value.loc.end },
+					};
+				}),
 				loc,
 			};
 		}

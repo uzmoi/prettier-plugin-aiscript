@@ -43,12 +43,6 @@ const printer: prettier.Printer<dst.Node> = {
 	isBlockComment(node) {
 		return (node as dst.Comment).value.startsWith("/*");
 	},
-	getCommentChildNodes(node, _options) {
-		switch (node.type) {
-			case "ObjectLiteral":
-				return node.properties.map(prop => prop.value);
-		}
-	},
 };
 
 const plugin: prettier.Plugin = {

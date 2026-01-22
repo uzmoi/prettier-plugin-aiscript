@@ -33,7 +33,14 @@ export interface FnParameter extends NodeBase {
 	default: Expression | null;
 }
 
-export type Node = Script | TopLevel | Statement | Expression | Ty | Comment;
+export type Node =
+	| Script
+	| TopLevel
+	| Statement
+	| Expression
+	| Ty
+	| Comment
+	| ObjectProperty;
 
 export interface Script extends NodeBase {
 	type: "Script";

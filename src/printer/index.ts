@@ -5,6 +5,7 @@ import type { AstPath } from "../types";
 import { printStatementSequence } from "./block";
 import { printDanglingComments } from "./comment";
 import { printExpressionWithParens } from "./expression";
+import { printObjectProperty } from "./object";
 import { printStatement } from "./statement";
 import { printTypeSource } from "./type-source";
 
@@ -47,6 +48,9 @@ export const printAiScript = (
 		case "FnType":
 			dev: assert.as<AstPath<typeof node>>(path);
 			return printTypeSource(path, options, print);
+		case "ObjectProperty":
+			dev: assert.as<AstPath<typeof node>>(path);
+			return printObjectProperty(path, options, print);
 		default:
 			return (
 				printStatement(path as AstPath<dst.Statement>, options, print) ??

@@ -3,7 +3,7 @@ import type * as dst from "../dst";
 import type { AstPath } from "../types";
 import { hasComments, printDanglingComments } from "./comment";
 
-const { fill, group, line, indent, ifBreak, join } = doc.builders;
+const { group, line, indent, ifBreak, join } = doc.builders;
 
 export const printObject = (
 	path: AstPath<dst.ObjectLiteral>,
@@ -31,18 +31,7 @@ export const printObject = (
 			"{",
 			indent([
 				line,
-				join(
-					[",", line],
-					path.map(
-						path =>
-							fill([
-								path.call(print, "key"),
-								":",
-								indent([line, path.call(print, "value")]),
-							]),
-						"properties",
-					),
-				),
+				join([",", line], path.map(print, "properties")),
 				isEmpty ? printDanglingComments(path, options) : ifBreak(","),
 			]),
 			line,
@@ -50,4 +39,12 @@ export const printObject = (
 		],
 		{ shouldBreak },
 	);
+};
+
+export const printObjectProperty = (
+	path: AstPath<dst.ObjectProperty>,
+	_options: ParserOptions<dst.Node>,
+	print: (path: AstPath) => Doc,
+) => {
+	return [path.call(print, "key"), ": ", path.call(print, "value")];
 };
