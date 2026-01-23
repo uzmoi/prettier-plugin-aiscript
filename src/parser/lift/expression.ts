@@ -5,6 +5,7 @@ import {
 	block,
 	DUMMY_LOC,
 	identifier,
+	identifierLocOf,
 	liftLoc,
 	readBackComments,
 } from "./helpers";
@@ -23,12 +24,12 @@ export const liftExpression = (
 				type: "If",
 				condition: liftExpression(node.cond, ctx),
 				then: liftStatement(node.then, ctx),
-				elseif: node.elseif.map(node => ({
-					type: "ElseIf",
-					condition: liftExpression(node.cond, ctx),
-					then: liftStatement(node.then, ctx),
-					loc: DUMMY_LOC,
-				})),
+				elseif: node.elseif.map(node => {
+					const condition = liftExpression(node.cond, ctx);
+					const then = liftStatement(node.then, ctx);
+					const loc = { start: condition.loc.start, end: then.loc.end };
+					return { type: "ElseIf", condition, then, loc };
+				}),
 				else: node.else == null ? null : liftStatement(node.else, ctx),
 				loc,
 			};
@@ -145,6 +146,7 @@ export const liftExpression = (
 					const value = liftExpression(valueAst, ctx);
 					const colon = readBackComments(ctx, value.loc.start) - 1;
 					const keyEnd = readBackComments(ctx, colon);
+					// FIXME: 文字列キーに対応できていない
 					const start = keyEnd - key.length;
 					return {
 						type: "ObjectProperty",
@@ -188,7 +190,7 @@ export const liftExpression = (
 				lhs,
 				rhs,
 				// FIXME: issue #4
-				loc: { start: lhs.loc.start, end: rhs.loc.end },
+				loc: { start: lhs.loc.start, end: loc.end },
 			};
 		}
 		case "call": {
@@ -216,7 +218,8 @@ export const liftExpression = (
 			return {
 				type: "Prop",
 				target,
-				name: identifier(node.name, DUMMY_LOC),
+				// "." を読み飛ばして次の identifier が name
+				name: identifier(node.name, identifierLocOf(loc.start + 1, ctx.source)),
 				// FIXME: issue #4, loc.start
 				loc: { start: target.loc.start, end: loc.end },
 			};

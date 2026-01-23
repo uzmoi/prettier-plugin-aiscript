@@ -2,7 +2,13 @@ import type { Ast } from "@syuilo/aiscript";
 import type * as dst from "../../dst";
 import type { LiftContext } from "./context";
 import { liftExpression } from "./expression";
-import { block, DUMMY_LOC, identifier, liftLoc } from "./helpers";
+import {
+	block,
+	DUMMY_LOC,
+	identifier,
+	liftLoc,
+	readBackComments,
+} from "./helpers";
 import { getSugarWhile, isOutSugar, isSugarFnDefinition } from "./sugar";
 import { liftType } from "./type";
 
@@ -27,6 +33,13 @@ export const liftStatement = (
 	switch (node.type) {
 		case "def": {
 			if (isSugarFnDefinition(node, ctx, loc.start)) {
+				// FIXME: loc.start
+				const body = block(node.expr.children, { start: 0, end: loc.end }, ctx);
+				// { の直後の位置
+				const afterBracket =
+					body.body[0] ? body.body[0].loc.start : loc.end - 1;
+				// { を読み戻す
+				body.loc.start = readBackComments(ctx, afterBracket) - 1;
 				return {
 					type: "FnDefinition",
 					name: identifier(node.dest.name, liftLoc(node.dest.loc, ctx)),
@@ -40,8 +53,7 @@ export const liftStatement = (
 						loc: DUMMY_LOC,
 					})),
 					returnTy: liftType(node.varType, ctx),
-					// FIXME: loc.start
-					body: block(node.expr.children, liftLoc(node.loc, ctx), ctx),
+					body,
 					loc,
 				};
 			}

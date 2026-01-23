@@ -1,7 +1,7 @@
 import type { Ast } from "@syuilo/aiscript";
 import type * as dst from "../../dst";
 import type { LiftContext } from "./context";
-import { DUMMY_LOC, liftLoc } from "./helpers";
+import { identifier, identifierLocOf, liftLoc } from "./helpers";
 
 export const liftType = <T extends Ast.TypeSource | undefined>(
 	node: T,
@@ -17,11 +17,7 @@ export const liftType = <T extends Ast.TypeSource | undefined>(
 		case "namedTypeSource": {
 			return {
 				type: "TypeReference",
-				name: {
-					type: "Identifier",
-					name: node.name,
-					loc: DUMMY_LOC,
-				},
+				name: identifier(node.name, identifierLocOf(loc.start, ctx.source)),
 				argument: liftType(node.inner, ctx),
 				loc,
 			};
