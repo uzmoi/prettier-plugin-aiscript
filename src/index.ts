@@ -64,6 +64,12 @@ const plugin: prettier.Plugin = {
 			default: false,
 			description: "Use single quotes instead of double quotes.",
 		},
+		semi: {
+			category: "AiScript",
+			type: "boolean",
+			default: true,
+			description: "Print semicolons.",
+		},
 	},
 };
 

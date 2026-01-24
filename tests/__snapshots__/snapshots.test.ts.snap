@@ -1,42 +1,42 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`access > snapshot 1`] = `
-"object.prop
+"object.prop;
 
-array[index]
+array[index];
 
-target[super_ultra_hyper_mega_miracle_ultimate_extremely_very_long_index_expression]
+target[super_ultra_hyper_mega_miracle_ultimate_extremely_very_long_index_expression];
 "
 `;
 
 exports[`array > snapshot 1`] = `
-"[]
+"[];
 
-[]
+[];
 
 [
   // 1
-]
+];
 
 [
   /* */
-]
+];
 
-[/* */]
+[/* */];
 
-[0]
+[0];
 
-[1]
+[1];
 
 [
   2, // 2
-]
+];
 
 [
   3,
-]
+];
 
-[0, 1]
+[0, 1];
 
 [
   "zero",
@@ -52,57 +52,57 @@ exports[`array > snapshot 1`] = `
   "ten",
   "eleven",
   "twelve",
-]
+];
 "
 `;
 
 exports[`assign > snapshot 1`] = `
-"lhs = rhs
+"lhs = rhs;
 
-lhs += rhs
+lhs += rhs;
 
-lhs -= rhs
+lhs -= rhs;
 "
 `;
 
 exports[`call > snapshot 1`] = `
-"f()
+"f();
 
-f(0)
+f(0);
 
-f(0, 1)
+f(0, 1);
 
 f(@() {
   //
-})
+});
 
 f(0, 1, @() {
   //
-})
+});
 
 f(
   super_ultra_hyper_mega_miracle_ultimate_extremely_very_long_argument_expression,
   @() {
     //
   }
-)
+);
 
 f({ en: ["foo", "bar", "baz", "qux"], ja: ["hoge", "fuga", "piyo"] }, @(a) {
   a
-})
+});
 
 f(@(array) {
   each (let element, array) {
-    <: \`type = {Core:type(element)}, value = {element}\`
+    <: \`type = {Core:type(element)}, value = {element}\`;
   }
-})
+});
 
 f(
   {
     hoge: 1,
   },
   last_argument
-)
+);
 "
 `;
 
@@ -116,29 +116,29 @@ comment
 */
 
 // leading comment
-[0, 1, 2] // end of line
+[0, 1, 2]; // end of line
 // trailing comment
 
-[/* */ 0]
+[/* */ 0];
 
-[0 /* */]
+[0 /* */];
 
-[/* */]
+[/* */];
 
-{ /* */ }
+{ /* */ };
 
-@() { /* */ }
+@() { /* */ };
 "
 `;
 
 exports[`definition > snapshot 1`] = `
-"var hoge = 0
-var fuga: str = f()
+"var hoge = 0;
+var fuga: str = f();
 
-let c = 299792458
-let g: num = 9.81
+let c = 299792458;
+let g: num = 9.81;
 
-let f = @() {}
+let f = @() {};
 "
 `;
 
@@ -169,14 +169,14 @@ exports[`function > snapshot 1`] = `
 
 @double(a: num) { a * 2 }
 
-@() {}
+@() {};
 "
 `;
 
 exports[`if > snapshot 1`] = `
-"if (0) 1
+"if (0) 1;
 
-if (2) 3 elif (4) 5 else 6
+if (2) 3 elif (4) 5 else 6;
 
 if (condition1) {
   "hoge"
@@ -189,22 +189,22 @@ if (condition1) {
 `;
 
 exports[`literals > snapshot 1`] = `
-"null
+"null;
 
-true
-false
+true;
+false;
 
-42
-6.28
+42;
+6.28;
 
-"Hello AiScript!"
-'"'
+"Hello AiScript!";
+'"';
 // TODO: "\\\\"
-"\\"'"
+"\\"'";
 
-\`Hello {name}!\`
-\`\\\`\`
-\`\\{\`
+\`Hello {name}!\`;
+\`\\\`\`;
+\`\\{\`;
 // TODO: \`\\\\\`
 "
 `;
@@ -219,29 +219,29 @@ exports[`match > snapshot 1`] = `
 `;
 
 exports[`object > snapshot 1`] = `
-"{}
+"{};
 
-{}
+{};
 
 {
   //
-}
+};
 
-{ /* */ }
+{ /* */ };
 
-{ hoge: 0 }
+{ hoge: 0 };
 
-{ hoge: 0, fuga: 1 }
+{ hoge: 0, fuga: 1 };
 
 {
   hoge: 0,
-}
+};
 
 {
   hoge: 0,
   fuga: 1,
   piyo: 2,
-}
+};
 
 {
   // 1
@@ -250,46 +250,46 @@ exports[`object > snapshot 1`] = `
   fuga: /* 3 */ 1 /* 4 */, // 5
   // 6
   piyo: 2,
-}
+};
 
 {
   super_ultra_hyper_mega_miracle_ultimate_extremely_very_so_long_property_name: 0,
   property: 1234567890 + 1234567890 - 1234567890 * 1234567890 / 1234567890 % 1234567890,
-}
+};
 "
 `;
 
 exports[`operator > snapshot 1`] = `
-"exists foo
+"exists foo;
 
-!not
+!not;
 
-lhs && rhs
+lhs && rhs;
 
-lhs || rhs
+lhs || rhs;
 
-<: "Hello AiScript!"
+<: "Hello AiScript!";
 "
 `;
 
 exports[`parens > snapshot 1`] = `
-"(a + b)()
+"(a + b)();
 
-(a - b).prop
+(a - b).prop;
 
-(a * b)[index]
+(a * b)[index];
 
-(@() {})()
+(@() {})();
 
-(exists a) || b
+(exists a) || b;
 
-eval { a }.b
+eval { a }.b;
 
-(!a).b
+(!a).b;
 
-(1 + 2) / (3 + 4)
+(1 + 2) / (3 + 4);
 
-1 - (2 + 3)
+1 - (2 + 3);
 "
 `;
 
@@ -298,19 +298,19 @@ exports[`prettier-ignore > snapshot 1`] = `
 [
 	0, 1,
 	2, 3,
-]
+];
 
 // prettier-ignore
-f()
+f();
 
 // prettier-ignore
-1 + 2
+1 + 2;
 
 // prettier-ignore
-target.prop
+target.prop;
 
 // prettier-ignore
-target[index]
+target[index];
 
 // TODO: https://github.com/uzmoi/prettier-plugin-aiscript/issues/4
 // // prettier-ignore
@@ -320,13 +320,13 @@ target[index]
 
 exports[`statements > snapshot 1`] = `
 "@f() {
-  return result
+  return result;
 }
 
 loop {
-  break
+  break;
 
-  continue
+  continue;
 }
 
 while (condition) {}
@@ -355,26 +355,26 @@ exports[`toplevel > snapshot 1`] = `
 :: Empty {}
 
 :: A {
-  let hoge = 0
+  let hoge = 0;
 
   :: B {
-    let fuga = 2
-    let piyo = 3
+    let fuga = 2;
+    let piyo = 3;
   }
 
-  :: C { let foo = -1 }
+  :: C { let foo = -1; }
 }
 "
 `;
 
 exports[`types > snapshot 1`] = `
-"var a: num = 0
-let b: num = 0
+"var a: num = 0;
+let b: num = 0;
 @f(a: num) {}
 
-let xs: arr = []
-let ys: arr<str> = []
+let xs: arr = [];
+let ys: arr<str> = [];
 
-let g: @(str) => bool = @() {}
+let g: @(str) => bool = @() {};
 "
 `;
