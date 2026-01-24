@@ -13,12 +13,14 @@
 	let tabWidth = 2;
 	let useTabs = false;
 	let singleQuote = false;
+	let semi = true;
 
 	$: options = {
 		printWidth: printWidth && Math.floor(printWidth),
 		tabWidth,
 		useTabs,
 		singleQuote,
+		semi,
 	} satisfies Options;
 </script>
 
@@ -45,6 +47,9 @@
 			</label>
 			<label>
 				singleQuote <input type="checkbox" bind:checked={singleQuote} />
+			</label>
+			<label>
+				semi <input type="checkbox" bind:checked={semi} />
 			</label>
 		</section>
 		<ul>
